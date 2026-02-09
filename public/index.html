@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI Collaboration & Editing Practice (Automarker)</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- Gate -->
+    <div id="gate" class="gate">
+      <div class="gateCard">
+        <div class="brandRow">
+          <div class="brandMark">FEthink</div>
+          <div class="brandSub">Automarker</div>
+        </div>
+
+        <h1>AI Collaboration & Editing Practice</h1>
+        <p>Enter the access code from your Payhip lesson.</p>
+
+        <div class="gateRow">
+          <input id="codeInput" type="password" placeholder="Access code" />
+          <button id="unlockBtn" class="primary">Unlock</button>
+        </div>
+
+        <div id="gateMsg" class="gateMsg" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <!-- App -->
+    <div id="app" class="app" style="display:none;">
+      <header class="header">
+        <div class="brandRow">
+          <div class="brandMark">FEthink</div>
+          <div class="brandSub">Automarker</div>
+        </div>
+
+        <div class="navLinks">
+          <a id="backLink" class="pill" href="#" target="_blank" rel="noopener">Back to lesson</a>
+          <a id="nextLink" class="pill" href="#" target="_blank" rel="noopener">Next: Quiz</a>
+          <button id="logoutBtn" class="pill ghost">Lock</button>
+        </div>
+      </header>
+
+      <main class="main oneCol">
+        <div class="panel">
+          <div class="panelTop">
+            <h2>Practice task</h2>
+            <div class="meta">
+              <span>Target: <strong id="targetWords">—</strong> words</span>
+            </div>
+          </div>
+
+          <!-- (kept as baseline static UI) -->
+          <div class="reqStrip">
+            <div class="reqItem">
+              <div class="reqIcon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <path d="M4 4h16v16H4z" stroke="currentColor" stroke-width="2"/>
+                  <path d="M7 9h10M7 13h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="reqText">
+                <div class="reqTitle">Summary slides (2pm)</div>
+                <div class="reqSub">Condense key messages fast.</div>
+              </div>
+            </div>
+
+            <div class="reqItem">
+              <div class="reqIcon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <path d="M4 6h16M4 10h16M4 14h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M8 6v12M16 6v12" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </div>
+              <div class="reqText">
+                <div class="reqTitle">Spreadsheet check</div>
+                <div class="reqSub">Avoid costly errors.</div>
+              </div>
+            </div>
+
+            <div class="reqItem">
+              <div class="reqIcon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="2"/>
+                  <path d="M7 9h10M7 12h7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="reqText">
+                <div class="reqTitle">Client email</div>
+                <div class="reqSub">Professional, calming tone.</div>
+              </div>
+            </div>
+
+            <div class="reqItem">
+              <div class="reqIcon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke="currentColor" stroke-width="2"/>
+                  <path d="M4 20a8 8 0 0 1 16 0" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </div>
+              <div class="reqText">
+                <div class="reqTitle">New starter help</div>
+                <div class="reqSub">Unblock progress quickly.</div>
+              </div>
+            </div>
+
+            <div class="reqItem">
+              <div class="reqIcon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <path d="M6 4h12v16H6z" stroke="currentColor" stroke-width="2"/>
+                  <path d="M8 8h8M8 12h8M8 16h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="reqText">
+                <div class="reqTitle">Weekly report (5pm)</div>
+                <div class="reqSub">Draft and submit by end of day.</div>
+              </div>
+            </div>
+          </div>
+
+          <div id="questionText" class="taskText">Loading task…</div>
+
+          <div class="templateBox">
+            <div class="templateHeader">
+              <h3>Response template</h3>
+              <div class="templateBtns">
+                <button id="insertTemplateBtn" class="secondary small">Insert template</button>
+                <button id="clearBtn" class="secondary small">Clear</button>
+              </div>
+            </div>
+
+            <textarea id="answerText" rows="16" placeholder="Write your answer here..."></textarea>
+
+            <div class="actionsRow">
+              <button id="submitBtn" class="primary">Submit for feedback</button>
+              <div id="wordCountBox" class="scoreBox">Words: —</div>
+            </div>
+
+            <div class="hint">
+              Minimum to be marked: <strong><span id="minGate">20</span> words</strong>.
+              Below this, you’ll be asked to add more before feedback is shown.
+            </div>
+
+            <div class="uploadBox">
+              <h3>Submission evidence (optional)</h3>
+              <div class="subtle">Front-end only: files are <strong>not</strong> uploaded to the server. Use this to organise what you will submit in your course platform.</div>
+
+              <div class="uploadRow">
+                <label class="uploadLabel" for="docFile">Final guide document (Word / PDF)</label>
+                <input id="docFile" class="fileInput" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+                <div id="docFileName" class="fileName">No file selected</div>
+              </div>
+
+              <div class="uploadRow">
+                <label class="uploadLabel" for="evidenceFiles">Evidence (screenshots/images/PDF) — you can select multiple</label>
+                <input id="evidenceFiles" class="fileInput" type="file" multiple accept="image/*,.pdf,application/pdf">
+                <div id="evidenceFileList" class="fileList">No files selected</div>
+              </div>
+
+              <div class="uploadRow">
+                <label class="uploadLabel" for="evidencePaste">Or paste evidence (prompts + AI responses)</label>
+                <textarea id="evidencePaste" rows="6" placeholder="Paste prompts and AI responses here (optional)..."></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Feedback (stacked under submit box) -->
+        <div class="panel">
+          <h2>Feedback</h2>
+
+          <div class="feedbackCard">
+            <div class="feedbackTop">
+              <div class="metric">
+                <div class="metricLabel">Score</div>
+                <div id="scoreBig" class="metricValue">—</div>
+              </div>
+              <div class="metric">
+                <div class="metricLabel">Word count</div>
+                <div id="wordCountBig" class="metricValue">—</div>
+              </div>
+            </div>
+
+            <div id="strengthsWrap" class="block" style="display:none;">
+              <h3>What you did well</h3>
+              <ul id="strengthsList" class="bullets"></ul>
+            </div>
+
+            <div id="tagsWrap" class="block" style="display:none;">
+              <h3>Feedback tags</h3>
+              <div id="tagsRow" class="tagsRow"></div>
+            </div>
+
+            <div id="gridWrap" class="block" style="display:none;">
+              <h3>Strengths & gaps</h3>
+
+              <div class="grid">
+                <div class="gridRow">
+                  <div class="gridName">Prompt structure (Role / Task / Context / Format)</div>
+                  <div id="gEthical" class="gridStatus">—</div>
+                </div>
+
+                <div class="gridRow">
+                  <div class="gridName">AI collaboration workflow (draft → edit → review → tighten)</div>
+                  <div id="gImpact" class="gridStatus">—</div>
+                </div>
+
+                <div class="gridRow">
+                  <div class="gridName">Output quality (one-page guide + shared-document tips)</div>
+                  <div id="gLegal" class="gridStatus">—</div>
+                </div>
+
+                <div class="gridRow">
+                  <div class="gridName">Evidence & reflection (what you would upload/submit)</div>
+                  <div id="gRecs" class="gridStatus">—</div>
+                </div>
+
+                <div class="gridRow">
+                  <div class="gridName">Constraints (one page, ~300–400 words)</div>
+                  <div id="gStructure" class="gridStatus">—</div>
+                </div>
+              </div>
+            </div>
+
+            <div id="feedbackBox" class="feedbackBox" aria-live="polite"></div>
+
+            <div id="learnMoreWrap" class="block" style="display:none;">
+              <button id="learnMoreBtn" class="secondary full" aria-expanded="false">
+                Learn more
+              </button>
+
+              <div id="frameworkPanel" class="frameworkPanel" style="display:none;" aria-hidden="true">
+                <div class="tabs" role="tablist" aria-label="Learn more tabs">
+                  <button class="tabBtn active" data-tab="gdpr" role="tab" aria-selected="true">Treat AI as a colleague</button>
+                  <button class="tabBtn" data-tab="unesco" role="tab" aria-selected="false">Communicate precisely</button>
+                  <button class="tabBtn" data-tab="ofsted" role="tab" aria-selected="false">Always human-review</button>
+                  <button class="tabBtn" data-tab="jisc" role="tab" aria-selected="false">Combine strengths</button>
+                </div>
+
+                <div class="tabBody">
+                  <div id="tab-gdpr" class="tabPane active" role="tabpanel">
+                    <div class="fwRow">
+                      <div class="fwTitle">Tip</div>
+                      <div id="gdprExpectation" class="fwText">—</div>
+                    </div>
+                    <div class="fwRow">
+                      <div class="fwTitle">Try this prompt</div>
+                      <div id="gdprCase" class="fwText">—</div>
+                    </div>
+                  </div>
+
+                  <div id="tab-unesco" class="tabPane" role="tabpanel">
+                    <div class="fwRow">
+                      <div class="fwTitle">Tip</div>
+                      <div id="unescoExpectation" class="fwText">—</div>
+                    </div>
+                    <div class="fwRow">
+                      <div class="fwTitle">Try this prompt</div>
+                      <div id="unescoCase" class="fwText">—</div>
+                    </div>
+                  </div>
+
+                  <div id="tab-ofsted" class="tabPane" role="tabpanel">
+                    <div class="fwRow">
+                      <div class="fwTitle">Tip</div>
+                      <div id="ofstedExpectation" class="fwText">—</div>
+                    </div>
+                    <div class="fwRow">
+                      <div class="fwTitle">Try this prompt</div>
+                      <div id="ofstedCase" class="fwText">—</div>
+                    </div>
+                  </div>
+
+                  <div id="tab-jisc" class="tabPane" role="tabpanel">
+                    <div class="fwRow">
+                      <div class="fwTitle">Tip</div>
+                      <div id="jiscExpectation" class="fwText">—</div>
+                    </div>
+                    <div class="fwRow">
+                      <div class="fwTitle">Try this prompt</div>
+                      <div id="jiscCase" class="fwText">—</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="modelWrap" class="modelWrap" style="display:none;">
+              <h3>Example of a strong prompt</h3>
+              <div class="subtle">Compare your response to the example below. You are not expected to match it exactly.</div>
+              <pre id="modelAnswer" class="modelAnswer"></pre>
+            </div>
+
+          </div>
+        </div>
+      </main>
+
+      <footer class="footer">
+        <div class="subtle">FEthink — deterministic automarker (no AI calls). Your work should reflect your own judgement.</div>
+      </footer>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
