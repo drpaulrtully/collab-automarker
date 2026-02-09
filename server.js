@@ -237,6 +237,43 @@ function markPrioritisationPrompt(answerText) {
       modelAnswer: null
     };
   }
+function markFinalGuide(text) {
+  const wc = wordCount(text);
+
+  const hasTitle = /^.+\n/.test(text.trim());
+  const hasIntro = wc > 50;
+  const bulletCount = (text.match(/•|\-|\*/g) || []).length;
+  const hasClosing = /summary|in summary|to conclude|overall/i.test(text);
+  const hasPersonal = /i\s|my\s|personal example:/i.test(text);
+  const inRange = wc >= 250 && wc <= 450;
+
+  let score = 0;
+  if (hasTitle) score += 2;
+  if (hasIntro) score += 2;
+  if (bulletCount >= 4) score += 2;
+  if (hasClosing) score += 2;
+  if (hasPersonal) score += 2;
+
+  const strengths = [];
+  if (hasTitle) strengths.push("Clear title provided.");
+  if (bulletCount >= 4) strengths.push("Practical bullet tips included.");
+  if (hasPersonal) strengths.push("Personal example included.");
+
+  const improvements = [];
+  if (!hasClosing) improvements.push("Add a one-sentence closing summary.");
+  if (!inRange) improvements.push("Aim for 300–400 words (one page).");
+  if (!hasPersonal) improvements.push("Add one short personal example.");
+
+  const warnings = [];
+  if (!inRange) warnings.push("Word count outside recommended range.");
+
+  return {
+    guideScore: score,
+    guideStrengths: strengths.slice(0, 3),
+    guideImprovements: improvements.slice(0, 3),
+    guideWarnings: warnings
+  };
+}
 
   const t = String(answerText || "").toLowerCase();
 
@@ -447,8 +484,18 @@ app.post("/api/unlock", (req, res) => {
 
 app.post("/api/mark", requireSession, (req, res) => {
   const answerText = clampStr(req.body?.answerText, 6000);
-  const result = markPrioritisationPrompt(answerText);
-  res.json({ ok: true, result });
+  const finalGuide = clampStr(req.body?.finalGuideText, 8000);
+
+  const promptResult = markPrioritisationPrompt(answerText);
+  const guideResult = markFinalGuide(finalGuide);
+
+  res.json({
+    ok: true,
+    result: {
+      ...promptResult,
+      ...guideResult
+    }
+  });
 });
 
 app.post("/api/logout", (_req, res) => {

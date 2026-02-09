@@ -86,6 +86,13 @@ const jiscCase = document.getElementById("jiscCase");
 const modelWrap = document.getElementById("modelWrap");
 const modelAnswerEl = document.getElementById("modelAnswer");
 
+// Final guide scoring (Stage 3)
+const finalGuideTextEl = document.getElementById("finalGuideText");
+const guideScoreWrap = document.getElementById("guideScoreWrap");
+const guideScoreBig = document.getElementById("guideScoreBig");
+const guideStrengths = document.getElementById("guideStrengths");
+const guideImprovements = document.getElementById("guideImprovements");
+
 /* ---------------- Helpers ---------------- */
 function escapeHtml(s) {
   return String(s || "")
@@ -293,11 +300,16 @@ async function mark() {
   feedbackBox.textContent = "";
   learnMoreWrap.style.display = "none";
   modelWrap.style.display = "none";
+guideScoreWrap.style.display = "none";
 
   submitBtn.disabled = true;
 
   try {
-    const data = await api("/api/mark", { answerText });
+   const data = await api("/api/mark", {
+  answerText,
+  finalGuideText: finalGuideTextEl.value
+});
+
     const r = data.result;
 
     if (r.gated) {
@@ -306,6 +318,18 @@ async function mark() {
     }
 
     scoreBig.textContent = `${r.score}/10`;
+// Final guide score (Stage 3)
+if (typeof r.guideScore === "number") {
+  guideScoreBig.textContent = `${r.guideScore}/10`;
+  guideStrengths.innerHTML = (r.guideStrengths || [])
+    .map(x => `<li>${escapeHtml(x)}</li>`)
+    .join("");
+  guideImprovements.innerHTML = (r.guideImprovements || [])
+    .map(x => `<li>${escapeHtml(x)}</li>`)
+    .join("");
+  guideScoreWrap.style.display = "block";
+}
+
     renderStrengths(r.strengths);
     renderTags(r.tags);
     renderGrid(r.grid);
