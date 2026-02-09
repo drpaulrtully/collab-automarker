@@ -174,6 +174,49 @@
               Minimum to be marked: <strong><span id="minGate">20</span> words</strong>.
               Below this, you’ll be asked to add more before feedback is shown.
             </div>
+<!-- Draft Assistant (below YOUR RESPONSE) -->
+<div class="draftAssistant">
+  <div class="daHead">
+    <h3>Draft Assistant (do the work here)</h3>
+    <div class="subtle">
+      Step 1: Write <strong>Prompt 1</strong> in “YOUR RESPONSE”, then generate a draft.
+      Step 2: Edit at least one section in your own words.
+      Step 3: Write <strong>Prompt 2</strong> below to refine the edited draft.
+    </div>
+  </div>
+
+  <div class="daGrid">
+    <div class="daCard">
+      <div class="daTitle">A) Prompt 1 → Generate draft</div>
+      <div class="subtle">Uses what you’ve written in “YOUR RESPONSE” as Prompt 1.</div>
+      <button id="genDraftBtn" class="secondary full" type="button">Generate draft</button>
+    </div>
+
+    <div class="daCard">
+      <div class="daTitle">B) AI draft (edit in your own words)</div>
+      <textarea id="draftEdited" rows="10" placeholder="AI draft will appear here. Edit at least one section in your own words..."></textarea>
+      <input id="draftOriginalHidden" type="hidden" value="">
+      <div id="draftMsg" class="daMsg" aria-live="polite"></div>
+    </div>
+
+    <div class="daCard">
+      <div class="daTitle">C) Prompt 2 (Refinement)</div>
+      <textarea id="prompt2Text" rows="6" placeholder="Write Prompt 2 here (Role / Task / Context / Format) to refine your edited draft..."></textarea>
+      <button id="refineDraftBtn" class="secondary full" type="button">Refine draft</button>
+    </div>
+
+    <div class="daCard">
+      <div class="daTitle">D) Final refined guide</div>
+      <textarea id="finalDraft" rows="10" placeholder="Final refined guide will appear here..."></textarea>
+      <div class="daBtns">
+        <button id="copyFinalToGuideBtn" class="secondary" type="button">Copy into FINAL ONE-PAGE GUIDE</button>
+        <button id="copyFinalBtn" class="secondary" type="button">Copy to clipboard</button>
+      </div>
+      <div id="finalMsg" class="daMsg" aria-live="polite"></div>
+    </div>
+  </div>
+</div>
+<!-- /Draft Assistant -->
 
             <!-- Evidence panel preserved -->
             <div class="uploadBox">

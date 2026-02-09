@@ -85,6 +85,20 @@ const jiscCase = document.getElementById("jiscCase");
 
 const modelWrap = document.getElementById("modelWrap");
 const modelAnswerEl = document.getElementById("modelAnswer");
+/* ---------------- Draft Assistant (Stage 4) ---------------- */
+const genDraftBtn = document.getElementById("genDraftBtn");
+const draftEditedEl = document.getElementById("draftEdited");
+const draftOriginalHiddenEl = document.getElementById("draftOriginalHidden");
+const draftMsgEl = document.getElementById("draftMsg");
+
+const prompt2TextEl = document.getElementById("prompt2Text");
+const refineDraftBtn = document.getElementById("refineDraftBtn");
+
+const finalDraftEl = document.getElementById("finalDraft");
+const copyFinalToGuideBtn = document.getElementById("copyFinalToGuideBtn");
+const copyFinalBtn = document.getElementById("copyFinalBtn");
+const finalMsgEl = document.getElementById("finalMsg");
+
 
 // Final guide scoring (Stage 3)
 const finalGuideTextEl = document.getElementById("finalGuideText");
@@ -105,6 +119,30 @@ function wc(s) {
   const t = String(s || "").trim();
   if (!t) return 0;
   return t.split(/\s+/).filter(Boolean).length;
+}
+function normText(s) {
+  return String(s || "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .replace(/[^\p{L}\p{N}\s]/gu, "")
+    .trim();
+}
+
+// Deterministic similarity: Jaccard overlap of word sets
+function similarity(a, b) {
+  const A = new Set(normText(a).split(" ").filter(Boolean));
+  const B = new Set(normText(b).split(" ").filter(Boolean));
+  if (A.size === 0 && B.size === 0) return 1;
+  if (A.size === 0 || B.size === 0) return 0;
+
+  let inter = 0;
+  for (const w of A) if (B.has(w)) inter += 1;
+  const union = A.size + B.size - inter;
+  return union === 0 ? 0 : inter / union;
+}
+
+async function copyToClipboard(text) {
+  await navigator.clipboard.writeText(String(text || ""));
 }
 
 function setVisible(el, show) {
@@ -209,7 +247,17 @@ async function loadConfig() {
   // Word count live
   answerTextEl.addEventListener("input", updateWordCount);
   updateWordCount();
+initDraftAssistant();
+
 }
+function initDraftAssistant() {
+  // ... full function body I gave you ...
+}
+
+/* ---------------- Gate unlock ---------------- */
+unlockBtn.addEventListener("click", async () => {
+  ...
+});
 
 /* ---------------- Gate unlock ---------------- */
 unlockBtn.addEventListener("click", async () => {
