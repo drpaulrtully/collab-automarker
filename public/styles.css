@@ -221,7 +221,7 @@ box-shadow: var(--shadow);
 }
 
 /* Brand row */
-..gateBrand{
+.gateBrand{
   display:flex;
   gap: var(--s3);
   align-items:center;
