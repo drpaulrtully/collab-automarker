@@ -1,0 +1,308 @@
+/* =========================================================
+   FEthink — Automarker base styles
+   (Presentation-only adjustments; behaviour unchanged)
+   ========================================================= */
+
+:root{
+  --bg:#faf7fd;
+  --card:#ffffff;
+  --ink:#1f1f29;
+  --muted:#6f6f85;
+  --border:#e7e1f2;
+
+  --purple:#7a3df0;
+  --purple-2:#9a6cff;
+
+  --r-sm:8px;
+  --r-md:12px;
+  --r-lg:18px;
+
+  --s1:6px;
+  --s2:10px;
+  --s3:14px;
+  --s4:18px;
+  --s5:26px;
+  --s6:34px;
+
+  --shadow:0 10px 24px rgba(28, 14, 63, .08);
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer}
+
+.wrap{max-width:1100px;margin:0 auto;padding:var(--s4)}
+
+.header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--s3);
+  margin-bottom:var(--s4);
+}
+
+.brandRow{display:flex;align-items:center;gap:10px}
+.brandMark{font-weight:800;color:var(--purple);letter-spacing:.2px}
+.brandSub{font-size:.9rem;color:var(--muted)}
+
+.headerBtns{display:flex;align-items:center;gap:10px}
+
+.linkBtn{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 14px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background:#fff;
+  color:#3b2a6d;
+  text-decoration:none;
+  font-weight:600;
+  box-shadow:0 2px 6px rgba(0,0,0,.05);
+  transition:transform .05s ease, box-shadow .05s ease, background .15s ease, color .15s ease;
+}
+
+.linkBtn:hover{
+  background:linear-gradient(180deg, #fff, #f6f2ff);
+  box-shadow:0 6px 14px rgba(0,0,0,.08);
+}
+
+.linkBtn.ghost{
+  background:transparent;
+  border-style:dashed;
+}
+
+.main.oneCol{display:block}
+
+.panel{
+  background:var(--card);
+  border-radius:var(--r-lg);
+  padding:var(--s4);
+  box-shadow:var(--shadow);
+  margin-bottom:var(--s5);
+}
+
+.panelTop{display:flex;align-items:center;justify-content:space-between;gap:var(--s3)}
+.meta{color:var(--muted);font-size:.95rem}
+
+.reqStrip{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:var(--s3);
+  margin:var(--s4) 0 var(--s6); /* extra space before TASK OVERVIEW */
+}
+
+@media (max-width:760px){
+  .reqStrip{grid-template-columns:1fr}
+}
+
+.reqItem{
+  display:flex;
+  gap:12px;
+  padding:12px 14px;
+  border:1px solid var(--border);
+  border-radius:var(--r-md);
+  background:#fff;
+}
+
+.reqIcon{
+  width:36px;height:36px;border-radius:999px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--purple);
+  border:1px solid var(--border);
+  background:#faf6ff;
+}
+
+.reqTitle{font-weight:700}
+.reqSub{font-size:.9rem;color:var(--muted)}
+
+.taskText h3{margin-top:var(--s4)}
+.templateBox{margin-top:var(--s4)}
+
+.templateHeader{display:flex;align-items:center;justify-content:space-between;gap:var(--s3)}
+.templateBtns{display:flex;gap:8px}
+
+textarea{
+  width:100%;
+  padding:12px 14px;
+  border-radius:var(--r-md);
+  border:1px solid var(--border);
+  font-family:inherit;
+  resize:vertical;
+}
+
+.actionsRow{display:flex;align-items:center;gap:10px;margin-top:10px}
+.scoreBox{font-weight:700;color:var(--purple)}
+
+.primary{
+  background:linear-gradient(135deg, var(--purple), var(--purple-2));
+  color:#fff;border:none;border-radius:999px;
+  padding:10px 16px;font-weight:700;
+}
+
+.secondary{
+  background:#fff;border:1px solid var(--border);border-radius:999px;
+  padding:8px 14px;font-weight:600;color:#3b2a6d;
+}
+
+.secondary.small{padding:6px 10px;font-size:.9rem}
+.secondary.full{width:100%}
+
+.hint{margin-top:8px;color:var(--muted);font-size:.9rem}
+
+.feedbackCard .metricValue{font-size:1.8rem;font-weight:800;color:var(--purple)}
+
+.tagsRow{display:flex;flex-wrap:wrap;gap:8px}
+.tag{padding:6px 10px;border-radius:999px;border:1px solid var(--border);font-size:.85rem}
+.tag.ok{background:#ecfff5;border-color:#b9f0d4}
+.tag.mid{background:#fff7e8;border-color:#ffe1a8}
+.tag.bad{background:#ffecec;border-color:#ffc6c6}
+
+.grid{display:grid;gap:10px}
+.gridRow{display:flex;align-items:center;justify-content:space-between;border:1px dashed var(--border);padding:10px;border-radius:var(--r-md)}
+.gridStatus{font-weight:700}
+
+.frameworkPanel{margin-top:10px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tabBtn{border:1px solid var(--border);background:#fff;border-radius:999px;padding:6px 12px;font-weight:700}
+.tabBtn.active{background:linear-gradient(135deg, var(--purple), var(--purple-2));color:#fff;border-color:transparent}
+
+.tabBody{margin-top:10px}
+.tabPane{display:none}
+.tabPane.active{display:block}
+.fwRow{display:flex;gap:10px;margin-bottom:6px}
+.fwTitle{font-weight:800;color:var(--purple)}
+
+.modelWrap{margin-top:var(--s4)}
+.modelAnswer{background:#0f1220;color:#dfe3ff;border-radius:var(--r-md);padding:12px;overflow:auto}
+
+.footer{margin:var(--s6) 0 var(--s4);text-align:center;color:var(--muted)}
+
+/* ---------------- Evidence upload panel (front-end only) ---------------- */
+.uploadBox{
+  margin-top: var(--s4);
+  padding-top: var(--s4);
+  border-top: 1px dashed var(--border);
+}
+
+.uploadRow{margin-top: var(--s3)}
+.uploadLabel{display:block;font-weight:700;margin-bottom:6px}
+.fileInput{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-md);background:#fff}
+.fileName,.fileList{margin-top:8px;font-size:.95rem;color:var(--muted);word-break:break-word}
+#evidencePaste{width:100%;margin-top:6px}
+/* Gate-only tweaks — guaranteed not to affect task page */
+.gate .gateCard h1{
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+/* =========================================================
+   Gate modal ONLY (scoped) — does NOT affect task page
+   ========================================================= */
+.gate{
+  position:fixed;
+  inset:0;
+  background:rgba(17,24,39,0.55);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 24px;
+  z-index:9999;
+}
+
+/* Gate card */
+.gate .gateCard{
+  width:min(560px, 100%);
+  background:#fff;
+ border-radius: var(--r-lg);
+  border:1px solid var(--border);
+ padding: var(--s6);
+box-shadow: var(--shadow);
+}
+
+/* Brand row */
+.gateBrand{
+  display:flex;
+  gap: var(--s3);
+  align-items:center;
+  margin-bottom: var(--s2);
+}
+
+/* Priorities-style logo chip (scoped) */
+.gate .logo{
+  font-weight: 900;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+  position: relative;
+  color: #111827;
+}
+.gate .logo::before{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  border-radius: 12px;
+  pointer-events:none;
+  background: linear-gradient(135deg, rgba(121,75,167,0.35), rgba(121,75,167,0.05));
+  opacity: 0.35;
+  z-index:-1;
+}
+
+.gate .gateLabel{
+  display:block;
+margin-top: var(--s4);
+  font-weight: 900;
+  font-size: 13px;
+  color:#111827;
+}
+
+.gate .gateRow{
+  display:grid;
+  grid-template-columns: 1fr 140px;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+/* Input look (scoped to gate only) */
+.gate input{
+  width:100%;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color:#111827;
+  background:#fff;
+  outline:none;
+}
+.gate input:focus{
+  border-color: rgba(121, 75, 167, 0.35);
+  box-shadow: 0 0 0 4px rgba(121, 75, 167, 0.10);
+}
+
+/* Unlock button should be black like Priorities (scoped) */
+.gate button.primary{
+  background:#111827;
+  color:#fff;
+  border:1px solid #111827;
+  border-radius: 10px;
+  font-weight: 900;
+  padding: 10px 12px;
+}
+.gate button.primary:hover{
+  box-shadow: 0 1px 1px rgba(17,24,39,0.04), 0 6px 18px rgba(17,24,39,0.06);
+}
+
+.gate .gateMsg{
+  margin-top: 12px;
+  color:#6b7280;
+  font-size:13px;
+  min-height:18px;
+}
+
+.gate .gateHint{
+  margin-top: 16px;
+  color:#6b7280;
+  font-size:12px;
+}
+
