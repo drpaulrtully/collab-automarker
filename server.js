@@ -143,25 +143,25 @@ EVIDENCE I WOULD SUBMIT (2–4 lines)
 
 /* ---------------- Learn more (4 tabs; IDs fixed) ---------------- */
 const FRAMEWORK = {
- AI Approach: {
+ gdpr: {
     expectation:
       "Treat AI as a colleague: don’t accept the first draft. Critique it, ask for alternatives, and request reasoning so you can choose the best option.",
     case:
       "Try: “Give me 2 alternative versions with different tones (formal vs friendly). Explain which is best for new starters and why.”"
   },
-  Be Precise: {
+  unesco: {
     expectation:
       "Communicate precisely: specify role, audience, and constraints. Then iterate with clarifying questions to improve accuracy and usefulness.",
     case:
       "Try: “Ask me 5 questions to clarify the audience, tools (Word/Google Docs), and house style before you write the guide.”"
   },
-  Keep Control: {
+  ofsted: {
     expectation:
       "Always human-review: check facts, tone, and clarity. Your judgement is the quality filter — AI is a drafting and editing assistant.",
     case:
       "Try: “List 5 risks in this draft (ambiguity, jargon, wrong assumptions). Suggest fixes while keeping the meaning the same.”"
   },
-  Refine prompts: {
+  jisc: {
     expectation:
       "Combine strengths: use AI for speed (drafts/reviews) and use your expertise for context, examples, and final decisions.",
     case:
