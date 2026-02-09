@@ -9,7 +9,7 @@
 <body>
   <div class="wrap">
 
- <!-- Gate (access code) -->
+<!-- Gate (access code) -->
 <div id="gate" class="gate" role="dialog" aria-modal="true" aria-label="Access code gate">
   <div class="gateCard">
     <div class="gateBrand">
@@ -20,18 +20,20 @@
       </div>
     </div>
 
-       <label class="gateLabel" for="codeInput">Access code</label>
+    <label class="gateLabel" for="codeInput">Access code</label>
     <div class="gateRow">
-      <input id="codeInput" type="password" autocomplete="one-time-code" placeholder="e.g. FETHINK-COLLAB-01" />
+      <input id="codeInput" type="text" autocomplete="one-time-code" placeholder="e.g. FETHINK-COLLAB-01" />
       <button id="unlockBtn" class="primary">Unlock</button>
     </div>
 
-          <div id="gateMsg" class="gateMsg" aria-live="polite"></div>
-<div class="gateHint">
+    <div id="gateMsg" class="gateMsg" aria-live="polite"></div>
+
+    <div class="gateHint">
       Tip: this page opens in a new tab so you can return to your lesson easily.
     </div>
   </div>
-</div> 
+</div>
+
 
     <!-- App -->
     <div id="app" class="app" style="display:none;">
@@ -135,7 +137,7 @@
 
           <div class="templateBox">
             <div class="templateHeader">
-              <h3>TASK OVERVIEW</h3>
+              <h3>YOUR RESPONSE</h3>
               <div class="templateBtns">
                 <button id="insertTemplateBtn" class="secondary small">Insert template</button>
                 <button id="clearBtn" class="secondary small">Clear</button>
