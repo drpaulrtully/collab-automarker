@@ -4,7 +4,7 @@
   "description": "FE think automarker - Improving Collaboration with AI (Payhip → Render) with simple access-code gate + cookie session",
   "main": "server.js",
   "type": "module",
-"engines": { "node": "18.x" },
+  "engines": { "node": "18.x" },
   "scripts": {
     "start": "node server.js"
   },
@@ -12,21 +12,5 @@
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "express": "^4.19.2"
-  }
-}
-{
-  "name": "collab-automarker",
-  "version": "1.0.0",
-  "description": "FE think automarker - Improving Collaboration with AI (Payhip → Render) with simple access-code gate + cookie session",
-  "main": "server.js",
-  "type": "module",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "cookie-parser": "^1.4.6",
-    "cors": "^2.8.5",
-    "express": "^4.19.2",
-    "openai": "^4.0.0"
   }
 }

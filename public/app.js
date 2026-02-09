@@ -256,11 +256,6 @@ function initDraftAssistant() {
 
 /* ---------------- Gate unlock ---------------- */
 unlockBtn.addEventListener("click", async () => {
-  ...
-});
-
-/* ---------------- Gate unlock ---------------- */
-unlockBtn.addEventListener("click", async () => {
   const code = String(codeInput.value || "").trim();
   if (!code) {
     gateMsg.textContent = "Please enter your access code.";
