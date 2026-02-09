@@ -2,355 +2,196 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>AI Collaboration & Editing Practice (Automarker)</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FEthink — AI Collaboration Practice Task</title>
+  <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-  <div class="wrap">
-
-<!-- Gate (access code) -->
-<div id="gate" class="gate" role="dialog" aria-modal="true" aria-label="Access code gate">
-  <div class="gateCard">
-    <div class="gateBrand">
-      <div class="logo">FEthink</div>
-      <div>
-        <h1>AI Collaboration &amp; Editing Practice</h1>
-        <p>Enter the access code from your Payhip lesson.</p>
-      </div>
-    </div>
-
-    <label class="gateLabel" for="codeInput">Access code</label>
-    <div class="gateRow">
-      <input id="codeInput" type="text" autocomplete="one-time-code" placeholder="e.g. FETHINK-COLLAB-01" />
+  <!-- Gate -->
+  <div id="gateWrap" class="gateWrap">
+    <div class="gateCard">
+      <h2>Enter access code</h2>
+      <input id="codeInput" type="password" placeholder="Access code" />
       <button id="unlockBtn" class="primary">Unlock</button>
-    </div>
-
-    <div id="gateMsg" class="gateMsg" aria-live="polite"></div>
-
-    <div class="gateHint">
-      Tip: this page opens in a new tab so you can return to your lesson easily.
+      <div id="gateMsg" class="gateMsg"></div>
     </div>
   </div>
-</div>
 
+  <header class="headerBar">
+    <div class="headerLeft">
+      <a id="backLink" class="secondary small" href="#" target="_blank">Back to lesson</a>
+    </div>
+    <div class="headerRight">
+      <a id="nextLink" class="secondary small" href="#" target="_blank">Next: Quiz</a>
+    </div>
+  </header>
 
-    <!-- App -->
-    <div id="app" class="app" style="display:none;">
-      <header class="header">
-        <div class="brandRow">
-          <div class="brandMark">FEthink</div>
-          <div class="brandSub">Automarker</div>
+  <main class="container">
+    <div class="card">
+
+      <!-- Task text -->
+      <h1 id="questionText">Task</h1>
+      <div id="templateText" class="templateText"></div>
+
+      <!-- Step 1 -->
+      <div class="templateBox">
+        <h3>Step 1 — Prompt 1 (Drafting)</h3>
+        <div class="subtle">
+          Write your first FEthink prompt using <strong>Role → Task → Context → Format</strong>.
+          This prompt asks the AI to draft the guide. (Minimum 20 words)
         </div>
-
-        <!-- Matches Priorities automarker -->
-        <div class="headerBtns">
-          <a id="backToCourse" class="linkBtn" href="#" target="_blank" rel="noopener noreferrer" style="display:none;">
-            Back to lesson
-          </a>
-          <a id="nextLesson" class="linkBtn" href="#" target="_blank" rel="noopener noreferrer" style="display:none;">
-            Next: Quiz
-          </a>
-          <button id="logoutBtn" class="linkBtn ghost" type="button">Lock</button>
-        </div>
-      </header>
-
-      <main class="main oneCol">
-        <div class="panel">
-          <div class="panelTop">
-            <h2>Practice task</h2>
-            <div class="meta">
-              <span>Target: <strong id="targetWords">—</strong> words</span>
-            </div>
-          </div>
-
-          <!-- Monday requests (2-across via CSS) -->
-          <div class="reqStrip">
-            <div class="reqItem">
-              <div class="reqIcon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                  <path d="M4 4h16v16H4z" stroke="currentColor" stroke-width="2"/>
-                  <path d="M7 9h10M7 13h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-              </div>
-              <div class="reqText">
-                <div class="reqTitle">Summary slides (2pm)</div>
-                <div class="reqSub">Condense key messages fast.</div>
-              </div>
-            </div>
-
-            <div class="reqItem">
-              <div class="reqIcon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                  <path d="M4 6h16M4 10h16M4 14h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                  <path d="M8 6v12M16 6v12" stroke="currentColor" stroke-width="2"/>
-                </svg>
-              </div>
-              <div class="reqText">
-                <div class="reqTitle">Spreadsheet check</div>
-                <div class="reqSub">Avoid costly errors.</div>
-              </div>
-            </div>
-
-            <div class="reqItem">
-              <div class="reqIcon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                  <path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="2"/>
-                  <path d="M7 9h10M7 12h7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-              </div>
-              <div class="reqText">
-                <div class="reqTitle">Client email</div>
-                <div class="reqSub">Professional, calming tone.</div>
-              </div>
-            </div>
-
-            <div class="reqItem">
-              <div class="reqIcon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke="currentColor" stroke-width="2"/>
-                  <path d="M4 20a8 8 0 0 1 16 0" stroke="currentColor" stroke-width="2"/>
-                </svg>
-              </div>
-              <div class="reqText">
-                <div class="reqTitle">New starter help</div>
-                <div class="reqSub">Unblock progress quickly.</div>
-              </div>
-            </div>
-
-            <div class="reqItem">
-              <div class="reqIcon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                  <path d="M6 4h12v16H6z" stroke="currentColor" stroke-width="2"/>
-                  <path d="M8 8h8M8 12h8M8 16h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-              </div>
-              <div class="reqText">
-                <div class="reqTitle">Weekly report (5pm)</div>
-                <div class="reqSub">Draft and submit by end of day.</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Task content injected here -->
-          <div id="questionText" class="taskText">Loading task…</div>
-
-          <div class="templateBox">
-            <div class="templateHeader">
-              <h3>YOUR RESPONSE</h3>
-              <div class="templateBtns">
-                <button id="insertTemplateBtn" class="secondary small">Insert template</button>
-                <button id="clearBtn" class="secondary small">Clear</button>
-              </div>
-            </div>
-
-            <textarea id="answerText" rows="16" placeholder="Write your answer here..."></textarea>
-<div class="templateBox">
-  <h3>FINAL ONE-PAGE GUIDE (this will be scored)</h3>
-
-  <div class="subtle">
-    Paste your final refined guide here (300–400 words).
-    This automarker scores your two prompts and your final guide text.
-    Uploads/screenshots are optional and are not used for marking.
-  </div>
-
-<div class="subtle">
-  Paste ONLY your two prompts below (clearly labelled):
-  Prompt 1 — Drafting
-  Prompt 2 — Editing & Refinement
-  Do not paste your full guide here.
-</div>
-
-  <textarea id="finalGuideText" rows="14"
-    placeholder="Paste your final one-page guide here..."></textarea>
-</div>
-
-            <div class="actionsRow">
-              <button id="submitBtn" class="primary">Submit for feedback</button>
-              <div id="wordCountBox" class="scoreBox">Words: —</div>
-            </div>
-
-            <div class="hint">
-              Minimum to be marked: <strong><span id="minGate">20</span> words</strong>.
-              Below this, you’ll be asked to add more before feedback is shown.
-            </div>
-<!-- Draft Assistant (below YOUR RESPONSE) -->
-<div class="draftAssistant">
-  <div class="daHead">
-    <h3>Draft Assistant (do the work here)</h3>
-    <div class="subtle">
-      Step 1: Write <strong>Prompt 1</strong> in “YOUR RESPONSE”, then generate a draft.
-      Step 2: Edit at least one section in your own words.
-      Step 3: Write <strong>Prompt 2</strong> below to refine the edited draft.
-    </div>
-  </div>
-
-  <div class="daGrid">
-    <div class="daCard">
-      <div class="daTitle">A) Prompt 1 → Generate draft</div>
-      <div class="subtle">Uses what you’ve written in “YOUR RESPONSE” as Prompt 1.</div>
-      <button id="genDraftBtn" class="secondary full" type="button">Generate draft</button>
-    </div>
-
-    <div class="daCard">
-      <div class="daTitle">B) AI draft (edit in your own words)</div>
-      <textarea id="draftEdited" rows="10" placeholder="AI draft will appear here. Edit at least one section in your own words..."></textarea>
-      <input id="draftOriginalHidden" type="hidden" value="">
-      <div id="draftMsg" class="daMsg" aria-live="polite"></div>
-    </div>
-
-    <div class="daCard">
-      <div class="daTitle">C) Prompt 2 (Refinement)</div>
-      <textarea id="prompt2Text" rows="6" placeholder="Write Prompt 2 here (Role / Task / Context / Format) to refine your edited draft..."></textarea>
-      <button id="refineDraftBtn" class="secondary full" type="button">Refine draft</button>
-    </div>
-
-    <div class="daCard">
-      <div class="daTitle">D) Final refined guide</div>
-      <textarea id="finalDraft" rows="10" placeholder="Final refined guide will appear here..."></textarea>
-      <div class="daBtns">
-        <button id="copyFinalToGuideBtn" class="secondary" type="button">Copy into FINAL ONE-PAGE GUIDE</button>
-        <button id="copyFinalBtn" class="secondary" type="button">Copy to clipboard</button>
+        <textarea
+          id="answerText"
+          rows="14"
+          placeholder="Write Prompt 1 here (Role / Task / Context / Format)..."></textarea>
       </div>
-      <div id="finalMsg" class="daMsg" aria-live="polite"></div>
-    </div>
-  </div>
-</div>
-<!-- /Draft Assistant -->
 
-            <!-- Evidence panel preserved -->
-            <div class="uploadBox">
-              <h3>Submission evidence (optional)</h3>
-              <div class="subtle">Front-end only: files are <strong>not</strong> uploaded to the server.</div>
-
-              <div class="uploadRow">
-                <label class="uploadLabel" for="docFile">Final guide document (Word / PDF)</label>
-                <input id="docFile" class="fileInput" type="file">
-                <div id="docFileName" class="fileName">No file selected</div>
-              </div>
-
-              <div class="uploadRow">
-                <label class="uploadLabel" for="evidenceFiles">Evidence (screenshots/images/PDF)</label>
-                <input id="evidenceFiles" class="fileInput" type="file" multiple>
-                <div id="evidenceFileList" class="fileList">No files selected</div>
-              </div>
-
-              <div class="uploadRow">
-                <label class="uploadLabel" for="evidencePaste">Or paste evidence (prompts + AI responses)</label>
-                <textarea id="evidencePaste" rows="6" placeholder="Paste prompts and AI responses here (optional)..."></textarea>
-              </div>
-            </div>
-
+      <!-- Draft Assistant (Steps 2–4) -->
+      <div class="draftAssistant">
+        <div class="daHead">
+          <h3>Steps 2–4 — Draft Assistant (do the work here)</h3>
+          <div class="subtle">
+            Step 2: Generate a first draft using Prompt 1.<br>
+            Step 3: Edit at least one section. You must change more than 5% before asking AI to refine.<br>
+            Step 4: Write Prompt 2 to refine your edited draft.
           </div>
         </div>
 
-        <!-- Feedback panel unchanged -->
-        <div class="panel">
-          <h2>Feedback</h2>
+        <div class="daGrid">
+          <div class="daCard">
+            <div class="daTitle">A) Generate draft from Prompt 1</div>
+            <button id="genDraftBtn" class="secondary full" type="button">Generate draft</button>
+          </div>
 
-          <div class="feedbackCard">
-            <div class="feedbackTop">
-              <div class="metric">
-                <div class="metricLabel">Score</div>
-                <div id="scoreBig" class="metricValue">—</div>
-              </div>
-              <div class="metric">
-                <div class="metricLabel">Word count</div>
-                <div id="wordCountBig" class="metricValue">—</div>
-              </div>
-            </div>
+          <div class="daCard">
+            <div class="daTitle">B) AI draft (edit in your own words)</div>
+            <textarea
+              id="draftEdited"
+              rows="10"
+              placeholder="AI draft will appear here. Edit at least one section in your own words..."></textarea>
+            <input id="draftOriginalHidden" type="hidden" value="" />
+            <div id="draftMsg" class="daMsg" aria-live="polite"></div>
+          </div>
 
-            <div id="strengthsWrap" class="block" style="display:none;">
-              <h3>What you did well</h3>
-              <ul id="strengthsList" class="bullets"></ul>
-            </div>
+          <div class="daCard">
+            <div class="daTitle">C) Prompt 2 (Refinement)</div>
+            <textarea
+              id="prompt2Text"
+              rows="6"
+              placeholder="Write Prompt 2 here (Role / Task / Context / Format) to refine your edited draft..."></textarea>
+            <button id="refineDraftBtn" class="secondary full" type="button">Refine draft</button>
+          </div>
 
-            <div id="tagsWrap" class="block" style="display:none;">
-              <h3>Feedback tags</h3>
-              <div id="tagsRow" class="tagsRow"></div>
-            </div>
-
-            <div id="gridWrap" class="block" style="display:none;">
-              <h3>Strengths & gaps</h3>
-              <div class="grid">
-                <div class="gridRow">
-                  <div class="gridName">Prompt structure (Role / Task / Context / Format)</div>
-                  <div id="gEthical" class="gridStatus">—</div>
-                </div>
-                <div class="gridRow">
-                  <div class="gridName">AI collaboration workflow</div>
-                  <div id="gImpact" class="gridStatus">—</div>
-                </div>
-                <div class="gridRow">
-                  <div class="gridName">Output quality</div>
-                  <div id="gLegal" class="gridStatus">—</div>
-                </div>
-                <div class="gridRow">
-                  <div class="gridName">Evidence & reflection</div>
-                  <div id="gRecs" class="gridStatus">—</div>
-                </div>
-                <div class="gridRow">
-                  <div class="gridName">Constraints</div>
-                  <div id="gStructure" class="gridStatus">—</div>
-                </div>
-              </div>
-            </div>
-
-            <div id="feedbackBox" class="feedbackBox"></div>
-
-            <div id="learnMoreWrap" class="block" style="display:none;">
-              <button id="learnMoreBtn" class="secondary full" aria-expanded="false">
-                Learn more
+          <div class="daCard">
+            <div class="daTitle">D) Final refined guide (AI output)</div>
+            <textarea
+              id="finalDraft"
+              rows="10"
+              placeholder="Final refined guide will appear here..."></textarea>
+            <div class="daBtns">
+              <button id="copyFinalToGuideBtn" class="secondary" type="button">
+                Copy into FINAL ONE-PAGE GUIDE
               </button>
-
-              <div id="frameworkPanel" class="frameworkPanel" style="display:none;">
-                <div class="tabs" role="tablist">
-                  <button class="tabBtn active" data-tab="gdpr">AI approach</button>
-                  <button class="tabBtn" data-tab="unesco">Be precise</button>
-                  <button class="tabBtn" data-tab="ofsted">Keep control</button>
-                  <button class="tabBtn" data-tab="jisc">Refine prompts</button>
-                </div>
-
-                <div class="tabBody">
-                  <div id="tab-gdpr" class="tabPane active">
-                    <div class="fwRow"><div class="fwTitle">Tip</div><div id="gdprExpectation" class="fwText">—</div></div>
-                    <div class="fwRow"><div class="fwTitle">Try this prompt</div><div id="gdprCase" class="fwText">—</div></div>
-                  </div>
-
-                  <div id="tab-unesco" class="tabPane">
-                    <div class="fwRow"><div class="fwTitle">Tip</div><div id="unescoExpectation" class="fwText">—</div></div>
-                    <div class="fwRow"><div class="fwTitle">Try this prompt</div><div id="unescoCase" class="fwText">—</div></div>
-                  </div>
-
-                  <div id="tab-ofsted" class="tabPane">
-                    <div class="fwRow"><div class="fwTitle">Tip</div><div id="ofstedExpectation" class="fwText">—</div></div>
-                    <div class="fwRow"><div class="fwTitle">Try this prompt</div><div id="ofstedCase" class="fwText">—</div></div>
-                  </div>
-
-                  <div id="tab-jisc" class="tabPane">
-                    <div class="fwRow"><div class="fwTitle">Tip</div><div id="jiscExpectation" class="fwText">—</div></div>
-                    <div class="fwRow"><div class="fwTitle">Try this prompt</div><div id="jiscCase" class="fwText">—</div></div>
-                  </div>
-                </div>
-              </div>
+              <button id="copyFinalBtn" class="secondary" type="button">
+                Copy to clipboard
+              </button>
             </div>
-
-            <div id="modelWrap" class="modelWrap" style="display:none;">
-              <h3>Example of a strong prompt</h3>
-              <div class="subtle">Compare your response to the example below.</div>
-              <pre id="modelAnswer" class="modelAnswer"></pre>
-            </div>
-
+            <div id="finalMsg" class="daMsg" aria-live="polite"></div>
           </div>
         </div>
-      </main>
+      </div>
+      <!-- /Draft Assistant -->
 
-      <footer class="footer">
-        <div class="subtle">FEthink — deterministic automarker (no AI calls).</div>
-      </footer>
+      <!-- Step 5 -->
+      <div class="templateBox">
+        <h3>Step 5 — FINAL ONE-PAGE GUIDE (this will be scored)</h3>
+        <div class="subtle">
+          Paste your final refined guide here (minimum 300 words).
+          This automarker scores your two prompts and your final guide text.
+        </div>
+        <textarea
+          id="finalGuideText"
+          rows="14"
+          placeholder="Paste your final one-page guide here..."></textarea>
+      </div>
+
+      <!-- Step 6 -->
+      <div class="actionsRow">
+        <button id="submitBtn" class="primary">Submit for feedback</button>
+        <div id="wordCountBox" class="scoreBox">Words: —</div>
+      </div>
+
+      <div class="hint">
+        Prompts must be at least <strong><span id="minGate">20</span> words</strong>.
+        Final guide must be at least <strong>300 words</strong>.
+      </div>
+
+      <!-- Step 7 -->
+      <div class="uploadBox">
+        <h3>Optional evidence (not used for marking)</h3>
+        <div class="subtle">
+          Keep screenshots/files for your own records or tutor verification. Uploads are not used for marking.
+        </div>
+        <input id="fileInput" type="file" multiple />
+        <div id="uploads"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="feedbackCard">
+        <div class="feedbackTop">
+          <div class="metric">
+            <div class="metricLabel">Prompt score</div>
+            <div id="scoreBig" class="metricValue">—</div>
+          </div>
+        </div>
+
+        <div id="strengthsWrap" class="block" style="display:none;">
+          <h4>Strengths</h4>
+          <ul id="strengths" class="bullets"></ul>
+        </div>
+
+        <div id="tagsWrap" class="block" style="display:none;">
+          <h4>Feedback tags</h4>
+          <div id="tags" class="tags"></div>
+        </div>
+
+        <div id="gridWrap" class="block" style="display:none;">
+          <h4>Communication reminders</h4>
+          <div id="grid" class="grid"></div>
+        </div>
+
+        <div id="feedbackBox" class="feedbackBox"></div>
+
+        <div id="learnMoreWrap" class="block" style="display:none;">
+          <button id="learnMoreBtn" class="secondary full">Learn more</button>
+          <div id="learnMorePanel" class="tabPanel">
+            <div class="tabs">
+              <button class="tab active" data-tab="clarity">Clarity</button>
+              <button class="tab" data-tab="tone">Tone</button>
+              <button class="tab" data-tab="conciseness">Conciseness</button>
+              <button class="tab" data-tab="inclusivity">Inclusivity</button>
+            </div>
+            <div class="tabBody">
+              <div id="tab-clarity" class="tabContent active"></div>
+              <div id="tab-tone" class="tabContent"></div>
+              <div id="tab-conciseness" class="tabContent"></div>
+              <div id="tab-inclusivity" class="tabContent"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="modelWrap" class="modelWrap" style="display:none;">
+          <h3>Example of a strong prompt</h3>
+          <div class="subtle">
+            Compare your prompt to the example below. You are not expected to match it exactly.
+          </div>
+          <pre id="modelAnswer" class="modelAnswer"></pre>
+        </div>
+      </div>
+
     </div>
-  </div>
+  </main>
 
-  <script src="app.js"></script>
+  <script src="/app.js"></script>
 </body>
 </html>
