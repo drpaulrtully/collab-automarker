@@ -191,3 +191,9 @@ textarea{
 .fileInput{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-md);background:#fff}
 .fileName,.fileList{margin-top:8px;font-size:.95rem;color:var(--muted);word-break:break-word}
 #evidencePaste{width:100%;margin-top:6px}
+/* Gate-only tweaks — guaranteed not to affect task page */
+.gate .gateCard h1{
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+

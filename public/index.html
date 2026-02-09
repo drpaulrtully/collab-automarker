@@ -9,25 +9,29 @@
 <body>
   <div class="wrap">
 
-    <!-- Gate -->
-    <div id="gate" class="gate">
-      <div class="gateCard">
-        <div class="brandRow">
-          <div class="brandMark">FEthink</div>
-          <div class="brandSub">Automarker</div>
-        </div>
-
-        <h1>AI Collaboration & Editing Practice</h1>
+ <!-- Gate (access code) -->
+<div id="gate" class="gate" role="dialog" aria-modal="true" aria-label="Access code gate">
+  <div class="gateCard">
+    <div class="gateBrand">
+      <div class="logo">FEthink</div>
+      <div>
+        <h1>AI Collaboration &amp; Editing Practice</h1>
         <p>Enter the access code from your Payhip lesson.</p>
-
-        <div class="gateRow">
-          <input id="codeInput" type="password" placeholder="Access code" />
-          <button id="unlockBtn" class="primary">Unlock</button>
-        </div>
-
-        <div id="gateMsg" class="gateMsg" aria-live="polite"></div>
       </div>
     </div>
+
+       <label class="gateLabel" for="codeInput">Access code</label>
+    <div class="gateRow">
+      <input id="codeInput" type="password" autocomplete="one-time-code" placeholder="e.g. FETHINK-COLLAB-01" />
+      <button id="unlockBtn" class="primary">Unlock</button>
+    </div>
+
+          <div id="gateMsg" class="gateMsg" aria-live="polite"></div>
+<div class="gateHint">
+      Tip: this page opens in a new tab so you can return to your lesson easily.
+    </div>
+  </div>
+</div> 
 
     <!-- App -->
     <div id="app" class="app" style="display:none;">
