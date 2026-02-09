@@ -15,8 +15,15 @@ const codeInput = document.getElementById("codeInput");
 const unlockBtn = document.getElementById("unlockBtn");
 const gateMsg = document.getElementById("gateMsg");
 
-const backLink = document.getElementById("backLink");
-const nextLink = document.getElementById("nextLink");
+// ✅ Support both header ID variants (Priorities + legacy)
+const backLink =
+  document.getElementById("backToCourse") ||
+  document.getElementById("backLink");
+
+const nextLink =
+  document.getElementById("nextLesson") ||
+  document.getElementById("nextLink");
+
 const logoutBtn = document.getElementById("logoutBtn");
 
 const questionTextEl = document.getElementById("questionText");
@@ -135,8 +142,23 @@ async function loadConfig() {
   targetWordsEl.textContent = data.targetWords || "—";
   minGateEl.textContent = data.minWordsGate || "20";
 
-  if (data.courseBackUrl) backLink.href = data.courseBackUrl;
-  if (data.nextLessonUrl) nextLink.href = data.nextLessonUrl;
+  if (backLink) {
+    if (data.courseBackUrl) {
+      backLink.href = data.courseBackUrl;
+      backLink.style.display = "inline-flex";
+    } else {
+      backLink.style.display = "none";
+    }
+  }
+
+  if (nextLink) {
+    if (data.nextLessonUrl) {
+      nextLink.href = data.nextLessonUrl;
+      nextLink.style.display = "inline-flex";
+    } else {
+      nextLink.style.display = "none";
+    }
+  }
 
   insertTemplateBtn.addEventListener("click", () => {
     answerTextEl.value = data.templateText || "";
@@ -177,7 +199,6 @@ async function loadConfig() {
 
   // Word count live
   answerTextEl.addEventListener("input", updateWordCount);
-
   updateWordCount();
 }
 
@@ -222,7 +243,6 @@ function renderTags(tags) {
 }
 
 function renderGrid(grid) {
-  // grid: {ethical, impact, legal, recs, structure}
   if (!grid) {
     gridWrap.style.display = "none";
     return;
@@ -242,17 +262,13 @@ function renderFramework(framework) {
   }
   gdprExpectation.textContent = framework.gdpr?.expectation || "—";
   gdprCase.textContent = framework.gdpr?.case || "—";
-
   unescoExpectation.textContent = framework.unesco?.expectation || "—";
   unescoCase.textContent = framework.unesco?.case || "—";
-
   ofstedExpectation.textContent = framework.ofsted?.expectation || "—";
   ofstedCase.textContent = framework.ofsted?.case || "—";
-
   jiscExpectation.textContent = framework.jisc?.expectation || "—";
   jiscCase.textContent = framework.jisc?.case || "—";
 
-  // collapsed by default
   setExpanded(learnMoreBtn, frameworkPanel, false);
   learnMoreWrap.style.display = "block";
 }
@@ -268,7 +284,6 @@ async function mark() {
   const n = wc(answerText);
   wordCountBig.textContent = String(n);
 
-  // reset
   scoreBig.textContent = "—";
   strengthsWrap.style.display = "none";
   tagsWrap.style.display = "none";
@@ -289,19 +304,15 @@ async function mark() {
     }
 
     scoreBig.textContent = `${r.score}/10`;
-
     renderStrengths(r.strengths);
     renderTags(r.tags);
     renderGrid(r.grid);
     renderFramework(r.framework);
-
     feedbackBox.textContent = r.feedback || "—";
 
     if (r.modelAnswer) {
       modelAnswerEl.textContent = r.modelAnswer;
       modelWrap.style.display = "block";
-    } else {
-      modelWrap.style.display = "none";
     }
   } catch {
     feedbackBox.textContent = "Network issue. Please try again.";

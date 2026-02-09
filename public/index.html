@@ -37,10 +37,15 @@
           <div class="brandSub">Automarker</div>
         </div>
 
-        <div class="navLinks">
-          <a id="backLink" class="pill" href="#" target="_blank" rel="noopener">Back to lesson</a>
-          <a id="nextLink" class="pill" href="#" target="_blank" rel="noopener">Next: Quiz</a>
-          <button id="logoutBtn" class="pill ghost">Lock</button>
+        <!-- Matches Priorities automarker -->
+        <div class="headerBtns">
+          <a id="backToCourse" class="linkBtn" href="#" target="_blank" rel="noopener noreferrer" style="display:none;">
+            Back to lesson
+          </a>
+          <a id="nextLesson" class="linkBtn" href="#" target="_blank" rel="noopener noreferrer" style="display:none;">
+            Next: Quiz
+          </a>
+          <button id="logoutBtn" class="linkBtn ghost" type="button">Lock</button>
         </div>
       </header>
 
@@ -53,7 +58,7 @@
             </div>
           </div>
 
-          <!-- (kept as baseline static UI) -->
+          <!-- Monday requests (2-across via CSS) -->
           <div class="reqStrip">
             <div class="reqItem">
               <div class="reqIcon">
@@ -121,11 +126,12 @@
             </div>
           </div>
 
+          <!-- Task content injected here -->
           <div id="questionText" class="taskText">Loading task…</div>
 
           <div class="templateBox">
             <div class="templateHeader">
-              <h3>Response template</h3>
+              <h3>TASK OVERVIEW</h3>
               <div class="templateBtns">
                 <button id="insertTemplateBtn" class="secondary small">Insert template</button>
                 <button id="clearBtn" class="secondary small">Clear</button>
@@ -144,19 +150,20 @@
               Below this, you’ll be asked to add more before feedback is shown.
             </div>
 
+            <!-- Evidence panel preserved -->
             <div class="uploadBox">
               <h3>Submission evidence (optional)</h3>
-              <div class="subtle">Front-end only: files are <strong>not</strong> uploaded to the server. Use this to organise what you will submit in your course platform.</div>
+              <div class="subtle">Front-end only: files are <strong>not</strong> uploaded to the server.</div>
 
               <div class="uploadRow">
                 <label class="uploadLabel" for="docFile">Final guide document (Word / PDF)</label>
-                <input id="docFile" class="fileInput" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+                <input id="docFile" class="fileInput" type="file">
                 <div id="docFileName" class="fileName">No file selected</div>
               </div>
 
               <div class="uploadRow">
-                <label class="uploadLabel" for="evidenceFiles">Evidence (screenshots/images/PDF) — you can select multiple</label>
-                <input id="evidenceFiles" class="fileInput" type="file" multiple accept="image/*,.pdf,application/pdf">
+                <label class="uploadLabel" for="evidenceFiles">Evidence (screenshots/images/PDF)</label>
+                <input id="evidenceFiles" class="fileInput" type="file" multiple>
                 <div id="evidenceFileList" class="fileList">No files selected</div>
               </div>
 
@@ -165,10 +172,11 @@
                 <textarea id="evidencePaste" rows="6" placeholder="Paste prompts and AI responses here (optional)..."></textarea>
               </div>
             </div>
+
           </div>
         </div>
 
-        <!-- Feedback (stacked under submit box) -->
+        <!-- Feedback panel unchanged -->
         <div class="panel">
           <h2>Feedback</h2>
 
@@ -196,101 +204,64 @@
 
             <div id="gridWrap" class="block" style="display:none;">
               <h3>Strengths & gaps</h3>
-
               <div class="grid">
                 <div class="gridRow">
                   <div class="gridName">Prompt structure (Role / Task / Context / Format)</div>
                   <div id="gEthical" class="gridStatus">—</div>
                 </div>
-
                 <div class="gridRow">
-                  <div class="gridName">AI collaboration workflow (draft → edit → review → tighten)</div>
+                  <div class="gridName">AI collaboration workflow</div>
                   <div id="gImpact" class="gridStatus">—</div>
                 </div>
-
                 <div class="gridRow">
-                  <div class="gridName">Output quality (one-page guide + shared-document tips)</div>
+                  <div class="gridName">Output quality</div>
                   <div id="gLegal" class="gridStatus">—</div>
                 </div>
-
                 <div class="gridRow">
-                  <div class="gridName">Evidence & reflection (what you would upload/submit)</div>
+                  <div class="gridName">Evidence & reflection</div>
                   <div id="gRecs" class="gridStatus">—</div>
                 </div>
-
                 <div class="gridRow">
-                  <div class="gridName">Constraints (one page, ~300–400 words)</div>
+                  <div class="gridName">Constraints</div>
                   <div id="gStructure" class="gridStatus">—</div>
                 </div>
               </div>
             </div>
 
-            <div id="feedbackBox" class="feedbackBox" aria-live="polite"></div>
+            <div id="feedbackBox" class="feedbackBox"></div>
 
             <div id="learnMoreWrap" class="block" style="display:none;">
               <button id="learnMoreBtn" class="secondary full" aria-expanded="false">
                 Learn more
               </button>
 
-              <div id="frameworkPanel" class="frameworkPanel" style="display:none;" aria-hidden="true">
-                <div class="tabs" role="tablist" aria-label="Learn more tabs">
-  <button class="tabBtn active" data-tab="gdpr" role="tab" aria-selected="true">
-    AI approach
-  </button>
-  <button class="tabBtn" data-tab="unesco" role="tab" aria-selected="false">
-    Be precise
-  </button>
-  <button class="tabBtn" data-tab="ofsted" role="tab" aria-selected="false">
-    Keep control
-  </button>
-  <button class="tabBtn" data-tab="jisc" role="tab" aria-selected="false">
-    Refine prompts
-  </button>
-</div>
+              <div id="frameworkPanel" class="frameworkPanel" style="display:none;">
+                <div class="tabs" role="tablist">
+                  <button class="tabBtn active" data-tab="gdpr">AI approach</button>
+                  <button class="tabBtn" data-tab="unesco">Be precise</button>
+                  <button class="tabBtn" data-tab="ofsted">Keep control</button>
+                  <button class="tabBtn" data-tab="jisc">Refine prompts</button>
+                </div>
 
                 <div class="tabBody">
-                  <div id="tab-gdpr" class="tabPane active" role="tabpanel">
-                    <div class="fwRow">
-                      <div class="fwTitle">Tip</div>
-                      <div id="gdprExpectation" class="fwText">—</div>
-                    </div>
-                    <div class="fwRow">
-                      <div class="fwTitle">Try this prompt</div>
-                      <div id="gdprCase" class="fwText">—</div>
-                    </div>
+                  <div id="tab-gdpr" class="tabPane active">
+                    <div class="fwRow"><div class="fwTitle">Tip</div><div id="gdprExpectation" class="fwText">—</div></div>
+                    <div class="fwRow"><div class="fwTitle">Try this prompt</div><div id="gdprCase" class="fwText">—</div></div>
                   </div>
 
-                  <div id="tab-unesco" class="tabPane" role="tabpanel">
-                    <div class="fwRow">
-                      <div class="fwTitle">Tip</div>
-                      <div id="unescoExpectation" class="fwText">—</div>
-                    </div>
-                    <div class="fwRow">
-                      <div class="fwTitle">Try this prompt</div>
-                      <div id="unescoCase" class="fwText">—</div>
-                    </div>
+                  <div id="tab-unesco" class="tabPane">
+                    <div class="fwRow"><div class="fwTitle">Tip</div><div id="unescoExpectation" class="fwText">—</div></div>
+                    <div class="fwRow"><div class="fwTitle">Try this prompt</div><div id="unescoCase" class="fwText">—</div></div>
                   </div>
 
-                  <div id="tab-ofsted" class="tabPane" role="tabpanel">
-                    <div class="fwRow">
-                      <div class="fwTitle">Tip</div>
-                      <div id="ofstedExpectation" class="fwText">—</div>
-                    </div>
-                    <div class="fwRow">
-                      <div class="fwTitle">Try this prompt</div>
-                      <div id="ofstedCase" class="fwText">—</div>
-                    </div>
+                  <div id="tab-ofsted" class="tabPane">
+                    <div class="fwRow"><div class="fwTitle">Tip</div><div id="ofstedExpectation" class="fwText">—</div></div>
+                    <div class="fwRow"><div class="fwTitle">Try this prompt</div><div id="ofstedCase" class="fwText">—</div></div>
                   </div>
 
-                  <div id="tab-jisc" class="tabPane" role="tabpanel">
-                    <div class="fwRow">
-                      <div class="fwTitle">Tip</div>
-                      <div id="jiscExpectation" class="fwText">—</div>
-                    </div>
-                    <div class="fwRow">
-                      <div class="fwTitle">Try this prompt</div>
-                      <div id="jiscCase" class="fwText">—</div>
-                    </div>
+                  <div id="tab-jisc" class="tabPane">
+                    <div class="fwRow"><div class="fwTitle">Tip</div><div id="jiscExpectation" class="fwText">—</div></div>
+                    <div class="fwRow"><div class="fwTitle">Try this prompt</div><div id="jiscCase" class="fwText">—</div></div>
                   </div>
                 </div>
               </div>
@@ -298,7 +269,7 @@
 
             <div id="modelWrap" class="modelWrap" style="display:none;">
               <h3>Example of a strong prompt</h3>
-              <div class="subtle">Compare your response to the example below. You are not expected to match it exactly.</div>
+              <div class="subtle">Compare your response to the example below.</div>
               <pre id="modelAnswer" class="modelAnswer"></pre>
             </div>
 
@@ -307,7 +278,7 @@
       </main>
 
       <footer class="footer">
-        <div class="subtle">FEthink — deterministic automarker (no AI calls). Your work should reflect your own judgement.</div>
+        <div class="subtle">FEthink — deterministic automarker (no AI calls).</div>
       </footer>
     </div>
   </div>
