@@ -212,20 +212,20 @@ textarea{
 
 /* Gate card */
 .gate .gateCard{
-  width:min(720px, 96vw);
+  width:min(560px, 100%);
   background:#fff;
-  border-radius: 16px;
-  border:1px solid #e5e7eb;
-  padding: 32px;
-  box-shadow: 0 1px 1px rgba(17,24,39,0.04), 0 10px 30px rgba(17,24,39,0.08);
+ border-radius: var(--r-lg);
+  border:1px solid var(--border);
+ padding: var(--s6);
+box-shadow: var(--shadow);
 }
 
 /* Brand row */
-.gate .gateBrand{
+..gateBrand{
   display:flex;
-  gap: 16px;
+  gap: var(--s3);
   align-items:center;
-  margin-bottom: 8px;
+  margin-bottom: var(--s2);
 }
 
 /* Priorities-style logo chip (scoped) */
@@ -251,7 +251,7 @@ textarea{
 
 .gate .gateLabel{
   display:block;
-  margin-top: 16px;
+margin-top: var(--s4);
   font-weight: 900;
   font-size: 13px;
   color:#111827;

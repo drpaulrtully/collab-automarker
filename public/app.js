@@ -111,8 +111,10 @@ function setExpanded(btn, panel, expanded) {
 }
 
 function showGate() {
+  // Show the app behind the modal so the dimmed underlay is visible (Priorities behaviour)
+  appEl.style.display = "block";
   gateEl.style.display = "flex";
-  appEl.style.display = "none";
+
   gateMsg.textContent = "";
   codeInput.value = "";
 }
