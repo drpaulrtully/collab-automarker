@@ -23,7 +23,7 @@
   --accent: #794BA7;
   --accent-weak: rgba(121, 75, 167, 0.10);
 
-  --primary: #111827;
+  --primary: var(--accent);
 
   --r-sm: 10px;
   --r-md: 12px;
@@ -39,7 +39,6 @@ body{
   margin:0;
   font-family: var(--font);
   color: var(--text);
-  background: var(--bg);
   line-height: 1.55;
   font-size: 15px;
 }
@@ -663,7 +662,7 @@ button.secondary.small {
 }
 
 body{
-  background: radial-gradient(1200px 600px at 10% -10%, #f7e7f2 0%, #fbf2f8 45%, #ffffff 70%);
+  background: linear-gradient(180deg, #ffffff 0%, #ffeaf6 55%, #ffffff 100%);
 }
 
 /* Keep content cards white */

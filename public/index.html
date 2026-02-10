@@ -66,9 +66,7 @@
             </div>
             <div class="templateBtns">
               <button id="insertTemplateBtn" class="secondary small" type="button">Insert template</button>
-              <button id="clearBtn" class="secondary small" type="button">Clear</button>
-              <!-- ✅ “Submit box” for Prompt 1 -->
-              <button id="genDraftBtn" class="primary" type="button">Generate draft</button>
+                            <!-- ✅ “Submit box” for Prompt 1 -->
             </div>
           </div>
 
@@ -88,18 +86,26 @@
   <h2>Step 2 — Generate the first draft</h2>
   <div class="subtle">
     Click <strong>Generate draft</strong> (from Step 1). The AI draft will appear below.
-  </div>
+<button id="genDraftBtn" class="primary" type="button">Generate draft</button>  
+</div>
 
   <!-- Box 2: AI draft (editable) -->
   <div class="panel" style="margin-top:16px;">
     <h3>Step 3 — Edit the AI draft in your own words</h3>
     <div class="subtle">
+
       You must edit at least <strong>10%</strong> before refining.
       Once you have edited it, click <strong>Copy edited draft</strong>, then paste it into Step 4.
     </div>
 
 <em class="subtle">Your edited guide</em>
-<textarea id="draftEdited" ...></textarea>
+<textarea
+  id="draftEdited"
+  rows="10"
+  placeholder="The AI draft will appear here. Edit at least one section in your own words…"></textarea>
+
+<input id="draftOriginalHidden" type="hidden" value="" />
+
 <div class="hint" id="draftCount">Draft words: 0</div>
 
     <div style="display:flex; gap:10px; align-items:center; margin-top:10px; flex-wrap:wrap;">
@@ -118,7 +124,10 @@
       placeholder="Paste your edited draft here (from Step 3)…"></textarea>
 
   <em class="subtle">Your prompt 2</em>
-<textarea id="prompt2Text" ... placeholder="Insert prompt 2 here (Role / Task / Context / Format)…"></textarea>
+<textarea
+  id="prompt2Text"
+  rows="8"
+  placeholder="Insert prompt 2 here (Role / Task / Context / Format)…"></textarea>
 
     <div style="display:flex; gap:10px; align-items:center; margin-top:10px; flex-wrap:wrap;">
       <button id="refineDraftBtn" class="secondary" type="button">Refine draft</button>
