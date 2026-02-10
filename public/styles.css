@@ -657,3 +657,20 @@ button.secondary.small {
   padding: 12px 16px;
   font-size: 15.5px;
 }
+/* Very light FEthink pink page background */
+:root{
+  --fethink-pink-wash: #fbf2f8;  /* very light pink */
+}
+
+body{
+  background: var(--fethink-pink-wash);
+}
+
+/* Keep content cards white */
+.card,
+.templateBox,
+.panel,
+.feedbackCard,
+.gateCard{
+  background: #ffffff;
+}
