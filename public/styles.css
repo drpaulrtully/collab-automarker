@@ -663,7 +663,7 @@ button.secondary.small {
 }
 
 body{
-  background: var(--fethink-pink-wash);
+  background: radial-gradient(1200px 600px at 10% -10%, #f7e7f2 0%, #fbf2f8 45%, #ffffff 70%);
 }
 
 /* Keep content cards white */
