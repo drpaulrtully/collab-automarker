@@ -218,15 +218,20 @@ async function loadConfig() {
     }
   }
 
+ if (insertTemplateBtn) {
   insertTemplateBtn.addEventListener("click", () => {
     answerTextEl.value = data.templateText || "";
     updateWordCount();
   });
+}
 
+if (clearBtn) {
   clearBtn.addEventListener("click", () => {
     answerTextEl.value = "";
     updateWordCount();
   });
+}
+
 
   logoutBtn.addEventListener("click", async () => {
     try {
@@ -563,6 +568,7 @@ if (evidenceFilesEl) evidenceFilesEl.addEventListener("change", renderEvidenceUI
 submitBtn.addEventListener("click", mark);
 
 /* ---------------- Initial load ---------------- */
-loadConfig().then(() => {
-  showGate();
+loadConfig()
+  .catch((e) => console.warn("Config load failed:", e))
+  .finally(() => showGate());
 });
