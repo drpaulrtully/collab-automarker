@@ -253,11 +253,6 @@ async function loadConfig() {
 }
 
 function initDraftAssistant() {
-  // Draft Assistant wiring (Stage 1)
-  // - Generate draft uses Prompt 1 (>=20 words)
-  // - Refine draft requires Prompt 2 (>=20 words)
-  // - Student must edit >=10% of AI draft before refinement
-
   if (!genDraftBtn || !draftEditedEl || !draftOriginalHiddenEl || !draftMsgEl) return;
   if (!prompt2TextEl || !refineDraftBtn || !finalDraftEl || !finalMsgEl) return;
 
@@ -266,20 +261,111 @@ function initDraftAssistant() {
     el.textContent = String(msg || "");
   };
 
-copyEditedBtn?.addEventListener("click", async () => {
-  try {
-    const edited = String(draftEditedEl.value || "");
-    if (!edited.trim()) {
-      draftMsgEl.textContent = "Nothing to copy yet. Generate a draft first.";
+  // ✅ Step 2: Generate draft
+  genDraftBtn.addEventListener("click", async () => {
+    const p1 = String(answerTextEl?.value || "").trim();
+
+    if (wc(p1) < 20) {
+      setMsg(draftMsgEl, "Prompt 1 must be at least 20 words.");
       return;
     }
-    await copyToClipboard(edited);
-    draftMsgEl.textContent = "Copied. Now paste into Step 4 (Edited draft to refine).";
-  } catch {
-    draftMsgEl.textContent = "Copy failed. Select the text and copy manually.";
-  }
-});
 
+    setMsg(draftMsgEl, "Generating draft…");
+
+    try {
+      const draft =
+`How to Use Shared Documents Effectively
+
+Shared documents help teams collaborate in real time, but only when used well. Below are practical tips to help new staff work effectively with shared files.
+
+• Use clear file names so others can quickly find the latest version.
+• Use comments to explain changes rather than silently rewriting someone else’s work.
+• Use track changes or suggestions so edits are transparent.
+• Avoid creating duplicate copies of the same document — agree where the “source of truth” lives.
+• Check version history before you start editing, and leave a short note when you finish.
+
+In summary, good shared-document habits reduce mistakes and save time.`;
+
+      draftOriginalHiddenEl.value = draft;
+      draftEditedEl.value = draft;
+      setMsg(draftMsgEl, "Draft generated. Now edit at least 10% in your own words.");
+    } catch {
+      setMsg(draftMsgEl, "Could not generate draft. Please try again.");
+    }
+  });
+
+  // ✅ Step 3: Copy edited draft
+  copyEditedBtn?.addEventListener("click", async () => {
+    try {
+      const edited = String(draftEditedEl.value || "");
+      if (!edited.trim()) {
+        setMsg(draftMsgEl, "Nothing to copy yet. Generate and edit the draft first.");
+        return;
+      }
+      await copyToClipboard(edited);
+      setMsg(draftMsgEl, "Copied. Now paste into Step 4 before refining.");
+    } catch {
+      setMsg(draftMsgEl, "Copy failed. Select the text and copy manually.");
+    }
+  });
+
+  // ✅ Step 4: Refine
+  refineDraftBtn.addEventListener("click", async () => {
+    const original = String(draftOriginalHiddenEl.value || "");
+    const edited = String(editedDraftToRefineEl?.value || "");
+    const p2 = String(prompt2TextEl.value || "").trim();
+
+    if (!original) {
+      setMsg(finalMsgEl, "Generate a draft first (Step 2).");
+      return;
+    }
+
+    if (!edited.trim()) {
+      setMsg(finalMsgEl, "Paste your edited draft into Step 4 before refining.");
+      return;
+    }
+
+    const sim = similarity(edited, original);
+    if (sim > 0.90) {
+      const pct = Math.round(sim * 100);
+      setMsg(draftMsgEl, `Edit more before refining. Current similarity: ${pct}%. Aim for ≤90%.`);
+      return;
+    }
+
+    if (wc(p2) < 20) {
+      setMsg(finalMsgEl, "Prompt 2 must be at least 20 words.");
+      return;
+    }
+
+    setMsg(finalMsgEl, "Refining draft…");
+
+    try {
+      const refined =
+        edited.trim() +
+        "\n\nSummary: Use clear naming, respectful commenting, and agreed team rules to keep shared documents accurate, consistent, and easy to collaborate on.";
+
+      finalDraftEl.value = refined;
+      setMsg(finalMsgEl, "Refined guide ready.");
+    } catch {
+      setMsg(finalMsgEl, "Could not refine draft. Please try again.");
+    }
+  });
+
+  copyFinalToGuideBtn?.addEventListener("click", () => {
+    if (!finalGuideTextEl) return;
+    finalGuideTextEl.value = String(finalDraftEl.value || "");
+    setMsg(finalMsgEl, "Copied into FINAL ONE-PAGE GUIDE.");
+  });
+
+  copyFinalBtn?.addEventListener("click", async () => {
+    try {
+      await copyToClipboard(finalDraftEl.value || "");
+      setMsg(finalMsgEl, "Copied to clipboard.");
+    } catch {
+      setMsg(finalMsgEl, "Copy failed. Select the text and copy manually.");
+    }
+  });
+}
 
     setMsg(draftMsgEl, "Generating draft…");
 
@@ -321,7 +407,6 @@ In summary, good shared-document habits reduce mistakes and save time.`;
       "Paste your edited draft into Step 4 before refining.";
     return;
   }
-
 
     // 10% edit rule: require similarity <= 0.90 (i.e., at least 10% different)
     const sim = similarity(edited, original);
