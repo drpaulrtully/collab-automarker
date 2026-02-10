@@ -71,6 +71,17 @@ function countAny(t, needles) {
 }
 function markFinalGuide(text) {
   const wc = wordCount(text);
+  // ✅ HARD GATE: final guide must be at least 300 words
+  if (wc < 300) {
+    return {
+      guideGated: true,
+      guideMessage: "Final guide is too short. Minimum 300 words required before it can be scored.",
+      guideScore: null,
+      guideStrengths: [],
+      guideImprovements: ["Expand your guide to at least 300 words, then resubmit."],
+      guideWarnings: [`Current word count: ${wc}. Minimum required: 300.`]
+    };
+  }
 
   const s = String(text || "");
   const hasIntro = wc > 50;
@@ -79,7 +90,7 @@ function markFinalGuide(text) {
   const bulletCount = (s.match(/•|\-|\*/g) || []).length;
   const hasClosing = /summary|in summary|to conclude|overall/i.test(s);
   const hasPersonal = /i\s|my\s|personal example:/i.test(s);
-  const inRange = wc >= 250 && wc <= 450;
+  const inRange = wc >= 300 && wc <= 400;
 
   let score = 0;
   if (hasTitle) score += 2;
@@ -95,11 +106,11 @@ function markFinalGuide(text) {
 
   const improvements = [];
   if (!hasClosing) improvements.push("Add a one-sentence closing summary.");
-  if (!inRange) improvements.push("Aim for 300–400 words (one page).");
+  if (!inRange) improvements.push("Keep the final guide to one page (300–400 words).");
   if (!hasPersonal) improvements.push("Add one short personal example.");
 
   const warnings = [];
-  if (!inRange) warnings.push("Word count outside recommended range.");
+ if (!inRange) warnings.push("Word count outside the 300–400 one-page limit.");
 
   return {
     guideScore: Math.max(0, Math.min(10, score)),
@@ -148,11 +159,9 @@ const QUESTION_TEXT = `
     <li><strong>Prompt 2:</strong> for Task 2 (review + improve the edited draft)</li>
   </ol>
 
-  <p>Then add <strong>2–4 lines</strong> explaining what evidence you would submit (e.g., final document + screenshots or copy/paste of prompts and AI responses).</p>
-
   <h3>Output constraint</h3>
   <ul>
-    <li><strong>Keep your response to one page (max 400 words).</strong></li>
+    <li><strong>Keep your final guide to one page (max 400 words).</strong></li>
   </ul>
 </div>
 `;
@@ -170,15 +179,11 @@ PROMPT 2 — Task 2 (Edit + refine)
 Role: You are a neutral editor collaborating on team documents.
 Task: Review the draft I paste below for clarity, consistency, tone, and logical flow. Suggest 3–4 specific improvements WITHOUT changing meaning. Then provide a tightened final version (~300–400 words) that removes repetition and ends with a short summary sentence.
 Context: Internal guide for beginners. Keep the tone professional but approachable. Preserve my personal example and keep it realistic for a busy office environment.
-Format: 
+Format:
 1) Numbered list of suggestions (Original → Revised → Reason).
 2) Then “Final polished version” with the finished guide.
-
-EVIDENCE I WOULD SUBMIT (2–4 lines)
-• Final one-page guide (Word/PDF) 
-• Screenshots or copy/paste of my prompts and the AI responses for Task 1 and Task 2
-• Highlighted edits showing what I changed and which AI suggestions I adopted
 `;
+
 
 /* ---------------- Learn more (4 tabs; IDs fixed) ---------------- */
 const FRAMEWORK = {
@@ -229,16 +234,6 @@ const OUTPUT_QUALITY_HITS = [
   "naming", "file name", "naming convention",
   "one page", "one-page",
   "300", "350", "400", "300–400", "300-400"
-];
-
-// Evidence/reflection signals
-const EVIDENCE_HITS = [
-  "upload", "uploaded",
-  "screenshot", "screenshots",
-  "copy", "copy/paste", "paste",
-  "prompts", "ai responses", "responses",
-  "final document", "word", "google doc", "pdf",
-  "highlight", "highlighted", "tracked changes"
 ];
 
 /* ---------------- Status helpers ---------------- */
@@ -367,34 +362,9 @@ function markPrioritisationPrompt(answerText) {
     );
   }
 
-  // Category D: Evidence / reflection (0–10)
-  const evidenceCount = countAny(t, EVIDENCE_HITS);
-  const mentionsEvidenceLines =
-    hasAny(t, ["evidence", "submit", "submission", "upload"]) || evidenceCount >= 3;
-
-  let evidenceLevel = 0;
-  let evidencePts = 0;
-
-  if (mentionsEvidenceLines && evidenceCount >= 6) {
-    evidenceLevel = 2;
-    evidencePts = 10;
-  } else if (mentionsEvidenceLines) {
-    evidenceLevel = 1;
-    evidencePts = 7;
-    notes.push(
-      "Evidence: Add 2–4 lines stating what you would submit (final doc + screenshots or copy/paste of prompts and AI responses)."
-    );
-  } else {
-    evidenceLevel = 0;
-    evidencePts = 3;
-    notes.push(
-      "Evidence: Include a short note on what you would upload/attach as proof (final guide + prompt/response evidence)."
-    );
-  }
-
-  // Total /40 averaged to /10
-  const total40 = structurePts + collabPts + qualityPts + evidencePts;
-  let score = Math.round(total40 / 4);
+    // Total /30 averaged to /10
+  const total30 = structurePts + collabPts + qualityPts;
+  let score = Math.round(total30 / 3);
   score = Math.max(0, Math.min(10, score));
 
   // Banding
@@ -416,16 +386,11 @@ function markPrioritisationPrompt(answerText) {
     strengths.push(
       "You constrained the output to a one-page guide with a clear structure and practical shared-document tips."
     );
-  if (evidenceLevel >= 1)
-    strengths.push(
-      "You considered evidence (final document + prompt/response proof), supporting accountability and reflection."
-    );
-
+ 
   const tags = [
     { name: "FEthink prompt structure", status: tagStatus(structureLevel) },
     { name: "Iterative AI collaboration", status: tagStatus(collabLevel) },
     { name: "Clear output constraints", status: tagStatus(qualityLevel) },
-    { name: "Evidence & reflection", status: tagStatus(evidenceLevel) },
     { name: "Workplace relevance", status: tagStatus(hasCollabContent ? 2 : 1) }
   ];
 
@@ -434,7 +399,6 @@ function markPrioritisationPrompt(answerText) {
     ethical: statusFromLevel(structureLevel), // prompt structure
     impact: statusFromLevel(collabLevel), // collaboration
     legal: statusFromLevel(qualityLevel), // output quality
-    recs: statusFromLevel(evidenceLevel), // evidence
     structure: statusFromLevel(hasLength ? 2 : 1) // constraints/length
   };
 

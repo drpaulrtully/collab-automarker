@@ -76,6 +76,7 @@
             id="answerText"
             rows="10"
             placeholder="Insert Prompt 1 here (Role / Task / Context / Format)…"></textarea>
+<div class="hint" id="prompt1Count">Prompt 1 words: 0</div>
 
           <div class="hint">This button generates a first draft in Step 2–3.</div>
         </div>
@@ -97,12 +98,9 @@
       Once you have edited it, click <strong>Copy edited draft</strong>, then paste it into Step 4.
     </div>
 
-    <textarea
-      id="draftEdited"
-      rows="10"
-      placeholder="The AI draft will appear here. Edit it in your own words…"></textarea>
-
-    <input id="draftOriginalHidden" type="hidden" value="" />
+<em class="subtle">Your edited guide</em>
+<textarea id="draftEdited" ...></textarea>
+<div class="hint" id="draftCount">Draft words: 0</div>
 
     <div style="display:flex; gap:10px; align-items:center; margin-top:10px; flex-wrap:wrap;">
       <button id="copyEditedBtn" class="secondary" type="button">Copy edited draft</button>
@@ -119,10 +117,8 @@
       rows="8"
       placeholder="Paste your edited draft here (from Step 3)…"></textarea>
 
-    <textarea
-      id="prompt2Text"
-      rows="6"
-      placeholder="Write Prompt 2 here (Role / Task / Context / Format)…"></textarea>
+  <em class="subtle">Your prompt 2</em>
+<textarea id="prompt2Text" ... placeholder="Insert prompt 2 here (Role / Task / Context / Format)…"></textarea>
 
     <div style="display:flex; gap:10px; align-items:center; margin-top:10px; flex-wrap:wrap;">
       <button id="refineDraftBtn" class="secondary" type="button">Refine draft</button>
@@ -203,11 +199,37 @@
           <div id="gridWrap" class="block" style="display:none;">
             <h3>Communication reminders</h3>
             <div class="grid" id="grid">
-              <div class="gridRow"><div class="gridName">Prompt structure</div><div id="gEthical" class="gridStatus">—</div></div>
-              <div class="gridRow"><div class="gridName">Collaboration</div><div id="gImpact" class="gridStatus">—</div></div>
-              <div class="gridRow"><div class="gridName">Output quality</div><div id="gLegal" class="gridStatus">—</div></div>
-              <div class="gridRow"><div class="gridName">Evidence</div><div id="gRecs" class="gridStatus">—</div></div>
-              <div class="gridRow"><div class="gridName">Length constraint</div><div id="gStructure" class="gridStatus">—</div></div>
+              <div class="gridRow">
+  <div class="gridName">
+    Prompt structure  
+    <div class="subtle">Did you follow Role → Task → Context → Format clearly?</div>
+  </div>
+  <div id="gEthical" class="gridStatus">—</div>
+</div>
+
+<div class="gridRow">
+  <div class="gridName">
+    Collaboration  
+    <div class="subtle">Did you use AI as a partner (draft → edit → refine) rather than accept the first output?</div>
+  </div>
+  <div id="gImpact" class="gridStatus">—</div>
+</div>
+
+<div class="gridRow">
+  <div class="gridName">
+    Output quality  
+    <div class="subtle">Is the final guide clear, practical, well-structured, and appropriate for new staff?</div>
+  </div>
+  <div id="gLegal" class="gridStatus">—</div>
+</div>
+
+<div class="gridRow">
+  <div class="gridName">
+    Length constraint  
+    <div class="subtle">Did you keep the final guide within the 300–400 word one-page limit?</div>
+  </div>
+  <div id="gStructure" class="gridStatus">—</div>
+</div>
             </div>
           </div>
 
@@ -217,10 +239,10 @@
             <button id="learnMoreBtn" class="secondary full" type="button" aria-expanded="false">Learn more</button>
             <div id="frameworkPanel" class="frameworkPanel" aria-hidden="true" style="display:none;">
               <div class="tabs">
-                <button class="tabBtn active" type="button" data-tab="gdpr" aria-selected="true">GDPR</button>
-                <button class="tabBtn" type="button" data-tab="unesco" aria-selected="false">UNESCO</button>
-                <button class="tabBtn" type="button" data-tab="ofsted" aria-selected="false">Ofsted</button>
-                <button class="tabBtn" type="button" data-tab="jisc" aria-selected="false">Jisc</button>
+                <button class="tabBtn active" type="button" data-tab="gdpr" aria-selected="true">AI Approach</button>
+                <button class="tabBtn" type="button" data-tab="unesco" aria-selected="false">Precision</button>
+                <button class="tabBtn" type="button" data-tab="ofsted" aria-selected="false">Keep Control</button>
+                <button class="tabBtn" type="button" data-tab="jisc" aria-selected="false">Keep Refining</button>
               </div>
               <div class="tabBody">
                 <div id="tab-gdpr" class="tabPane active">

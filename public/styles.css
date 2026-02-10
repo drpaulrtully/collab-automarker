@@ -512,12 +512,13 @@ button.full[aria-expanded="true"]::after{
   padding: var(--s4);
   background:#fff;
 }
-.modelAnswer{
-  margin: var(--s3) 0 0 0;
-  white-space: pre-wrap;
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.6;
+.modelAnswer {
+  font-size: 15.5px;
+  line-height: 1.7;
+}
+
+@media (max-width: 640px) {
+  .modelAnswer { font-size: 16px; }
 }
 
 /* Gate */
@@ -614,4 +615,45 @@ button.full[aria-expanded="true"]::after{
   .taskText{ font-size: 13px; }
   .taskText ol, .taskText ul{ margin-left: 16px; }
   .taskText .taskMiniNote{ padding: var(--s2); }
+}
+/* Global readability uplift */
+body { font-size: 16.5px; }
+.card, .templateBox, .panel, .feedbackCard { font-size: 16.5px; }
+.subtle { font-size: 14.5px; }
+h1 { font-size: 26px; }
+h2 { font-size: 20px; }
+h3 { font-size: 17px; }
+
+/* Task text injected from server */
+.taskText { font-size: 16.5px; line-height: 1.7; }
+
+/* Mobile readability */
+@media (max-width: 640px) {
+  body { font-size: 17px; }
+  h1 { font-size: 22px; }
+  h2 { font-size: 19px; }
+  h3 { font-size: 16.5px; }
+}
+/* Larger, more readable buttons (UX sign-off tweak) */
+button.primary,
+button.secondary,
+.linkBtn {
+  padding: 12px 16px;
+  font-size: 15.5px;
+  border-radius: 10px;
+}
+
+button.primary.small,
+button.secondary.small {
+  padding: 9px 12px;
+  font-size: 14.5px;
+}
+.tabs .tabBtn {
+  padding: 10px 14px;
+  font-size: 14.5px;
+  border-radius: 999px;
+}
+#learnMoreBtn{
+  padding: 12px 16px;
+  font-size: 15.5px;
 }

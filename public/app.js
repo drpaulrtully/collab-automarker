@@ -35,6 +35,9 @@ const insertTemplateBtn = document.getElementById("insertTemplateBtn");
 const clearBtn = document.getElementById("clearBtn");
 const answerTextEl = document.getElementById("answerText");
 
+const prompt1CountEl = document.getElementById("prompt1Count");
+const draftCountEl = document.getElementById("draftCount");
+
 // Evidence (front-end only; no server upload)
 const docFileEl = document.getElementById("docFile");
 const evidenceFilesEl = document.getElementById("evidenceFiles");
@@ -58,7 +61,6 @@ const gridWrap = document.getElementById("gridWrap");
 const gEthical = document.getElementById("gEthical");
 const gImpact = document.getElementById("gImpact");
 const gLegal = document.getElementById("gLegal");
-const gRecs = document.getElementById("gRecs");
 const gStructure = document.getElementById("gStructure");
 
 const feedbackBox = document.getElementById("feedbackBox");
@@ -122,6 +124,14 @@ function wc(s) {
   const t = String(s || "").trim();
   if (!t) return 0;
   return t.split(/\s+/).filter(Boolean).length;
+}
+function updateDraftAndPromptCounts() {
+  if (prompt1CountEl) {
+    prompt1CountEl.textContent = `Prompt 1 words: ${wc(answerTextEl?.value || "")}`;
+  }
+  if (draftCountEl) {
+    draftCountEl.textContent = `Draft words: ${wc(draftEditedEl?.value || "")}`;
+  }
 }
 
 function normText(s) {
@@ -248,6 +258,8 @@ async function loadConfig() {
   // Word count live
   answerTextEl.addEventListener("input", updateWordCount);
   updateWordCount();
+answerTextEl.addEventListener("input", updateDraftAndPromptCounts);
+updateDraftAndPromptCounts();
 
   initDraftAssistant();
 }
@@ -260,6 +272,8 @@ function initDraftAssistant() {
     if (!el) return;
     el.textContent = String(msg || "");
   };
+  // Live word count for the draft as the student edits
+  draftEditedEl.addEventListener("input", updateDraftAndPromptCounts);
 
   // ✅ Step 2: Generate draft
   genDraftBtn.addEventListener("click", async () => {
@@ -288,6 +302,7 @@ In summary, good shared-document habits reduce mistakes and save time.`;
 
       draftOriginalHiddenEl.value = draft;
       draftEditedEl.value = draft;
+updateDraftAndPromptCounts();
       setMsg(draftMsgEl, "Draft generated. Now edit at least 10% in your own words.");
     } catch {
       setMsg(draftMsgEl, "Could not generate draft. Please try again.");
@@ -295,19 +310,23 @@ In summary, good shared-document habits reduce mistakes and save time.`;
   });
 
   // ✅ Step 3: Copy edited draft
-  copyEditedBtn?.addEventListener("click", async () => {
-    try {
-      const edited = String(draftEditedEl.value || "");
-      if (!edited.trim()) {
-        setMsg(draftMsgEl, "Nothing to copy yet. Generate and edit the draft first.");
-        return;
-      }
-      await copyToClipboard(edited);
-      setMsg(draftMsgEl, "Copied. Now paste into Step 4 before refining.");
-    } catch {
-      setMsg(draftMsgEl, "Copy failed. Select the text and copy manually.");
+ copyEditedBtn?.addEventListener("click", async () => {
+  try {
+    const edited = String(draftEditedEl.value || "");
+    if (!edited.trim()) {
+      draftMsgEl.textContent = "Nothing to copy yet. Generate and edit the draft first.";
+      return;
     }
-  });
+    await copyToClipboard(edited);
+    if (editedDraftToRefineEl) {
+      editedDraftToRefineEl.value = edited;
+    }
+    draftMsgEl.textContent =
+      "Copied and pasted into Step 4. You can now write Prompt 2 and refine.";
+  } catch {
+    draftMsgEl.textContent = "Copy failed. Select the text and copy manually.";
+  }
+});
 
   // ✅ Step 4: Refine
   refineDraftBtn.addEventListener("click", async () => {
@@ -341,8 +360,13 @@ In summary, good shared-document habits reduce mistakes and save time.`;
 
     try {
       const refined =
-        edited.trim() +
-        "\n\nSummary: Use clear naming, respectful commenting, and agreed team rules to keep shared documents accurate, consistent, and easy to collaborate on.";
+  edited.trim() +
+  "\n\n---\n" +
+  "Improvements added by AI:\n" +
+  "• Reworded the introduction for clarity and tone for new starters.\n" +
+  "• Tightened bullet points to be more action-focused.\n" +
+  "• Added a short closing line to reinforce good practice.\n\n" +
+  "Tip: You can further ask the AI to suggest alternative phrasings or a checklist version.";
 
       finalDraftEl.value = refined;
       setMsg(finalMsgEl, "Refined guide ready.");
@@ -415,8 +439,7 @@ function renderGrid(grid) {
   gEthical.textContent = grid.ethical || "—";
   gImpact.textContent = grid.impact || "—";
   gLegal.textContent = grid.legal || "—";
-  gRecs.textContent = grid.recs || "—";
-  gStructure.textContent = grid.structure || "—";
+   gStructure.textContent = grid.structure || "—";
   gridWrap.style.display = "block";
 }
 
@@ -474,6 +497,16 @@ async function mark() {
     }
 
     scoreBig.textContent = `${r.score}/10`;
+
+// ✅ Hard gate message for final guide (<300 words)
+if (r.guideGated) {
+  guideScoreWrap.style.display = "none";
+
+  // Append the guide gate message so students understand what to fix
+  const existing = String(feedbackBox.textContent || "").trim();
+  const msg = r.guideMessage || "Final guide must be at least 300 words.";
+  feedbackBox.textContent = existing ? `${existing}\n\nFINAL GUIDE: ${msg}` : `FINAL GUIDE: ${msg}`;
+}
 
     // Final guide score (Stage 3)
     if (typeof r.guideScore === "number") {
