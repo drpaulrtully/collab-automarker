@@ -209,6 +209,34 @@ textarea{
   padding: 24px;
   z-index:9999;
 }
+/* Alias: support existing HTML class="gateWrap" */
+.gateWrap{
+  position:fixed;
+  inset:0;
+  background:rgba(17,24,39,0.55);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  z-index:9999;
+}
+
+.gateWrap .gateCard{ /* same as .gate .gateCard */
+  width:min(560px, 100%);
+  background:#fff;
+  border-radius: var(--r-lg);
+  border:1px solid var(--border);
+  padding: var(--s6);
+  box-shadow: var(--shadow);
+}
+
+.gateWrap .gateLabel,
+.gateWrap .gateRow,
+.gateWrap input,
+.gateWrap .gateMsg,
+.gateWrap .gateHint{
+  /* These inherit fine from your base; this line just ensures scope works */
+}
 
 /* Gate card */
 .gate .gateCard{
@@ -305,4 +333,3 @@ margin-top: var(--s4);
   color:#6b7280;
   font-size:12px;
 }
-
