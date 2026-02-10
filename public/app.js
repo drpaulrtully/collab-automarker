@@ -29,6 +29,7 @@ const logoutBtn = document.getElementById("logoutBtn");
 const questionTextEl = document.getElementById("questionText");
 const targetWordsEl = document.getElementById("targetWords");
 const minGateEl = document.getElementById("minGate");
+const minGateEchoEl = document.getElementById("minGateEcho");
 
 const insertTemplateBtn = document.getElementById("insertTemplateBtn");
 const clearBtn = document.getElementById("clearBtn");
@@ -85,7 +86,8 @@ const jiscCase = document.getElementById("jiscCase");
 
 const modelWrap = document.getElementById("modelWrap");
 const modelAnswerEl = document.getElementById("modelAnswer");
-/* ---------------- Draft Assistant (Stage 4) ---------------- */
+
+/* ---------------- Draft Assistant (Stage 1) ---------------- */
 const genDraftBtn = document.getElementById("genDraftBtn");
 const draftEditedEl = document.getElementById("draftEdited");
 const draftOriginalHiddenEl = document.getElementById("draftOriginalHidden");
@@ -98,7 +100,8 @@ const finalDraftEl = document.getElementById("finalDraft");
 const copyFinalToGuideBtn = document.getElementById("copyFinalToGuideBtn");
 const copyFinalBtn = document.getElementById("copyFinalBtn");
 const finalMsgEl = document.getElementById("finalMsg");
-
+const copyEditedBtn = document.getElementById("copyEditedBtn");
+const editedDraftToRefineEl = document.getElementById("editedDraftToRefine");
 
 // Final guide scoring (Stage 3)
 const finalGuideTextEl = document.getElementById("finalGuideText");
@@ -120,6 +123,7 @@ function wc(s) {
   if (!t) return 0;
   return t.split(/\s+/).filter(Boolean).length;
 }
+
 function normText(s) {
   return String(s || "")
     .toLowerCase()
@@ -143,10 +147,6 @@ function similarity(a, b) {
 
 async function copyToClipboard(text) {
   await navigator.clipboard.writeText(String(text || ""));
-}
-
-function setVisible(el, show) {
-  el.style.display = show ? "block" : "none";
 }
 
 function setExpanded(btn, panel, expanded) {
@@ -186,8 +186,9 @@ async function loadConfig() {
   const data = await res.json();
 
   questionTextEl.innerHTML = data.questionText || "—";
-  targetWordsEl.textContent = data.targetWords || "—";
+  if (targetWordsEl) targetWordsEl.textContent = data.targetWords || "—";
   minGateEl.textContent = data.minWordsGate || "20";
+  if (minGateEchoEl) minGateEchoEl.textContent = data.minWordsGate || "20";
 
   if (backLink) {
     if (data.courseBackUrl) {
@@ -247,96 +248,124 @@ async function loadConfig() {
   // Word count live
   answerTextEl.addEventListener("input", updateWordCount);
   updateWordCount();
-initDraftAssistant();
 
+  initDraftAssistant();
 }
+
 function initDraftAssistant() {
-  if (!genDraftBtn || !refineDraftBtn) return;
+  // Draft Assistant wiring (Stage 1)
+  // - Generate draft uses Prompt 1 (>=20 words)
+  // - Refine draft requires Prompt 2 (>=20 words)
+  // - Student must edit >=10% of AI draft before refinement
 
-  genDraftBtn.addEventListener("click", async () => {
-    const p1 = String(answerTextEl.value || "").trim();
+  if (!genDraftBtn || !draftEditedEl || !draftOriginalHiddenEl || !draftMsgEl) return;
+  if (!prompt2TextEl || !refineDraftBtn || !finalDraftEl || !finalMsgEl) return;
 
-    if (wc(p1) < 20) {
-      draftMsgEl.textContent = "Prompt 1 must be at least 20 words.";
+  const setMsg = (el, msg) => {
+    if (!el) return;
+    el.textContent = String(msg || "");
+  };
+
+copyEditedBtn?.addEventListener("click", async () => {
+  try {
+    const edited = String(draftEditedEl.value || "");
+    if (!edited.trim()) {
+      draftMsgEl.textContent = "Nothing to copy yet. Generate a draft first.";
       return;
     }
+    await copyToClipboard(edited);
+    draftMsgEl.textContent = "Copied. Now paste into Step 4 (Edited draft to refine).";
+  } catch {
+    draftMsgEl.textContent = "Copy failed. Select the text and copy manually.";
+  }
+});
 
-    draftMsgEl.textContent = "Generating draft…";
+
+    setMsg(draftMsgEl, "Generating draft…");
 
     try {
-      // TEMP stub until /api/draft exists
-      const fakeDraft =
+      // Stage 1: deterministic stub (until /api/draft exists)
+      const draft =
 `How to Use Shared Documents Effectively
 
 Shared documents help teams collaborate in real time, but only when used well. Below are practical tips to help new staff work effectively with shared files.
 
 • Use clear file names so others can quickly find the latest version.
-• Use comments instead of editing other people’s text without explanation.
+• Use comments to explain changes rather than silently rewriting someone else’s work.
 • Use track changes or suggestions so edits are transparent.
-• Avoid creating duplicate copies of the same document.
-• Agree basic team rules for shared documents.
+• Avoid creating duplicate copies of the same document — agree where the “source of truth” lives.
+• Check version history before you start editing, and leave a short note when you finish.
 
-In summary, good shared document habits save time and reduce mistakes.`;
+In summary, good shared-document habits reduce mistakes and save time.`;
 
-      draftOriginalHiddenEl.value = fakeDraft;
-      draftEditedEl.value = fakeDraft;
-      draftMsgEl.textContent = "Draft generated. Now edit at least one section in your own words.";
-    } catch (e) {
-      draftMsgEl.textContent = "Could not generate draft. Try again.";
+      draftOriginalHiddenEl.value = draft;
+      draftEditedEl.value = draft;
+      setMsg(draftMsgEl, "Draft generated. Now edit at least one section in your own words (10%+ change required).");
+    } catch {
+      setMsg(draftMsgEl, "Could not generate draft. Please try again.");
     }
   });
 
-  refineDraftBtn.addEventListener("click", async () => {
-    const edited = String(draftEditedEl.value || "");
-    const original = String(draftOriginalHiddenEl.value || "");
+ refineDraftBtn.addEventListener("click", async () => {
+  const original = String(draftOriginalHiddenEl.value || "");
+  const edited = String(editedDraftToRefineEl?.value || "");
+  const p2 = String(prompt2TextEl.value || "").trim();
+
+  if (!original) {
+    finalMsgEl.textContent = "Generate a draft first (Step 2).";
+    return;
+  }
+
+  if (!edited.trim()) {
+    finalMsgEl.textContent =
+      "Paste your edited draft into Step 4 before refining.";
+    return;
+  }
+
+
+    // 10% edit rule: require similarity <= 0.90 (i.e., at least 10% different)
     const sim = similarity(edited, original);
-
-    if (!original) {
-      draftMsgEl.textContent = "Generate a draft first.";
+    if (sim > 0.90) {
+      const pct = Math.round(sim * 100);
+      setMsg(draftMsgEl, `You need to edit more before refining. Current similarity: ${pct}%. Aim for 90% or less.`);
       return;
     }
 
-    if (sim > 0.95) {
-      draftMsgEl.textContent =
-        "You must change more than 5% of the AI draft before refining.";
+    if (wc(p2) < 20) {
+      setMsg(finalMsgEl, "Prompt 2 must be at least 20 words.");
       return;
     }
 
-    if (wc(prompt2TextEl.value) < 20) {
-      finalMsgEl.textContent = "Prompt 2 must be at least 20 words.";
-      return;
-    }
-
-    finalMsgEl.textContent = "Refining draft…";
+    setMsg(finalMsgEl, "Refining draft…");
 
     try {
-      // TEMP stub until /api/refine exists
+      // Stage 1: deterministic stub (until /api/refine exists)
       const refined =
         edited.trim() +
-        "\n\nIn summary, effective collaboration on shared documents depends on clear naming, respectful editing, and agreed team practices.";
+        "\n\nSummary: Use clear naming, respectful commenting, and agreed team rules to keep shared documents accurate, consistent, and easy to collaborate on.";
 
       finalDraftEl.value = refined;
-      finalMsgEl.textContent = "Refined guide ready.";
-    } catch (e) {
-      finalMsgEl.textContent = "Could not refine draft. Try again.";
+      setMsg(finalMsgEl, "Refined guide ready.");
+    } catch {
+      setMsg(finalMsgEl, "Could not refine draft. Please try again.");
     }
   });
 
-  copyFinalToGuideBtn.addEventListener("click", () => {
-    finalGuideTextEl.value = finalDraftEl.value || "";
-    finalMsgEl.textContent = "Copied into FINAL ONE-PAGE GUIDE.";
+  copyFinalToGuideBtn?.addEventListener("click", () => {
+    if (!finalGuideTextEl) return;
+    finalGuideTextEl.value = String(finalDraftEl.value || "");
+    setMsg(finalMsgEl, "Copied into FINAL ONE-PAGE GUIDE.");
   });
 
-  copyFinalBtn.addEventListener("click", async () => {
+  copyFinalBtn?.addEventListener("click", async () => {
     try {
       await copyToClipboard(finalDraftEl.value || "");
-      finalMsgEl.textContent = "Copied to clipboard.";
+      setMsg(finalMsgEl, "Copied to clipboard.");
     } catch {
-      finalMsgEl.textContent = "Copy failed. Select and copy manually.";
+      setMsg(finalMsgEl, "Copy failed. Select the text and copy manually.");
     }
   });
 }
-
 
 /* ---------------- Gate unlock ---------------- */
 unlockBtn.addEventListener("click", async () => {
@@ -427,15 +456,15 @@ async function mark() {
   feedbackBox.textContent = "";
   learnMoreWrap.style.display = "none";
   modelWrap.style.display = "none";
-guideScoreWrap.style.display = "none";
+  guideScoreWrap.style.display = "none";
 
   submitBtn.disabled = true;
 
   try {
-   const data = await api("/api/mark", {
-  answerText,
-  finalGuideText: finalGuideTextEl.value
-});
+    const data = await api("/api/mark", {
+      answerText,
+      finalGuideText: finalGuideTextEl.value
+    });
 
     const r = data.result;
 
@@ -445,17 +474,18 @@ guideScoreWrap.style.display = "none";
     }
 
     scoreBig.textContent = `${r.score}/10`;
-// Final guide score (Stage 3)
-if (typeof r.guideScore === "number") {
-  guideScoreBig.textContent = `${r.guideScore}/10`;
-  guideStrengths.innerHTML = (r.guideStrengths || [])
-    .map(x => `<li>${escapeHtml(x)}</li>`)
-    .join("");
-  guideImprovements.innerHTML = (r.guideImprovements || [])
-    .map(x => `<li>${escapeHtml(x)}</li>`)
-    .join("");
-  guideScoreWrap.style.display = "block";
-}
+
+    // Final guide score (Stage 3)
+    if (typeof r.guideScore === "number") {
+      guideScoreBig.textContent = `${r.guideScore}/10`;
+      guideStrengths.innerHTML = (r.guideStrengths || [])
+        .map(x => `<li>${escapeHtml(x)}</li>`)
+        .join("");
+      guideImprovements.innerHTML = (r.guideImprovements || [])
+        .map(x => `<li>${escapeHtml(x)}</li>`)
+        .join("");
+      guideScoreWrap.style.display = "block";
+    }
 
     renderStrengths(r.strengths);
     renderTags(r.tags);
