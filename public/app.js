@@ -571,4 +571,3 @@ submitBtn.addEventListener("click", mark);
 loadConfig()
   .catch((e) => console.warn("Config load failed:", e))
   .finally(() => showGate());
-});
