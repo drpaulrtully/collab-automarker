@@ -251,8 +251,92 @@ initDraftAssistant();
 
 }
 function initDraftAssistant() {
-  // ... full function body I gave you ...
+  if (!genDraftBtn || !refineDraftBtn) return;
+
+  genDraftBtn.addEventListener("click", async () => {
+    const p1 = String(answerTextEl.value || "").trim();
+
+    if (wc(p1) < 20) {
+      draftMsgEl.textContent = "Prompt 1 must be at least 20 words.";
+      return;
+    }
+
+    draftMsgEl.textContent = "Generating draft…";
+
+    try {
+      // TEMP stub until /api/draft exists
+      const fakeDraft =
+`How to Use Shared Documents Effectively
+
+Shared documents help teams collaborate in real time, but only when used well. Below are practical tips to help new staff work effectively with shared files.
+
+• Use clear file names so others can quickly find the latest version.
+• Use comments instead of editing other people’s text without explanation.
+• Use track changes or suggestions so edits are transparent.
+• Avoid creating duplicate copies of the same document.
+• Agree basic team rules for shared documents.
+
+In summary, good shared document habits save time and reduce mistakes.`;
+
+      draftOriginalHiddenEl.value = fakeDraft;
+      draftEditedEl.value = fakeDraft;
+      draftMsgEl.textContent = "Draft generated. Now edit at least one section in your own words.";
+    } catch (e) {
+      draftMsgEl.textContent = "Could not generate draft. Try again.";
+    }
+  });
+
+  refineDraftBtn.addEventListener("click", async () => {
+    const edited = String(draftEditedEl.value || "");
+    const original = String(draftOriginalHiddenEl.value || "");
+    const sim = similarity(edited, original);
+
+    if (!original) {
+      draftMsgEl.textContent = "Generate a draft first.";
+      return;
+    }
+
+    if (sim > 0.95) {
+      draftMsgEl.textContent =
+        "You must change more than 5% of the AI draft before refining.";
+      return;
+    }
+
+    if (wc(prompt2TextEl.value) < 20) {
+      finalMsgEl.textContent = "Prompt 2 must be at least 20 words.";
+      return;
+    }
+
+    finalMsgEl.textContent = "Refining draft…";
+
+    try {
+      // TEMP stub until /api/refine exists
+      const refined =
+        edited.trim() +
+        "\n\nIn summary, effective collaboration on shared documents depends on clear naming, respectful editing, and agreed team practices.";
+
+      finalDraftEl.value = refined;
+      finalMsgEl.textContent = "Refined guide ready.";
+    } catch (e) {
+      finalMsgEl.textContent = "Could not refine draft. Try again.";
+    }
+  });
+
+  copyFinalToGuideBtn.addEventListener("click", () => {
+    finalGuideTextEl.value = finalDraftEl.value || "";
+    finalMsgEl.textContent = "Copied into FINAL ONE-PAGE GUIDE.";
+  });
+
+  copyFinalBtn.addEventListener("click", async () => {
+    try {
+      await copyToClipboard(finalDraftEl.value || "");
+      finalMsgEl.textContent = "Copied to clipboard.";
+    } catch {
+      finalMsgEl.textContent = "Copy failed. Select and copy manually.";
+    }
+  });
 }
+
 
 /* ---------------- Gate unlock ---------------- */
 unlockBtn.addEventListener("click", async () => {

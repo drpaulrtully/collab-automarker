@@ -8,7 +8,7 @@
 </head>
 <body>
   <!-- Gate -->
-  <div id="gateWrap" class="gateWrap">
+  <div id="gate" class="gate">
     <div class="gateCard">
       <h2>Enter access code</h2>
       <input id="codeInput" type="password" placeholder="Access code" />
@@ -16,6 +16,7 @@
       <div id="gateMsg" class="gateMsg"></div>
     </div>
   </div>
+<div id="app">
 
   <header class="headerBar">
     <div class="headerLeft">
@@ -60,7 +61,7 @@
         <div class="daGrid">
           <div class="daCard">
             <div class="daTitle">A) Generate draft from Prompt 1</div>
-            <button id="genDraftBtn" class="secondary full" type="button">Generate draft</button>
+            <button id="genDraftBtn" class="secondary" type="button">Generate draft</button>
           </div>
 
           <div class="daCard">
@@ -79,7 +80,7 @@
               id="prompt2Text"
               rows="6"
               placeholder="Write Prompt 2 here (Role / Task / Context / Format) to refine your edited draft..."></textarea>
-            <button id="refineDraftBtn" class="secondary full" type="button">Refine draft</button>
+            <button id="refineDraftBtn" class="secondary" type="button">Refine draft</button>
           </div>
 
           <div class="daCard">
@@ -191,7 +192,8 @@
 
     </div>
   </main>
-
   <script src="/app.js"></script>
+</div>
 </body>
+
 </html>
