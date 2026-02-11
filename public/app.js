@@ -37,6 +37,8 @@ const answerTextEl = document.getElementById("answerText");
 
 const prompt1CountEl = document.getElementById("prompt1Count");
 const draftCountEl = document.getElementById("draftCount");
+const editSimilarityEl = document.getElementById("editSimilarity");
+const refineSimilarityEl = document.getElementById("refineSimilarity");
 
 // Evidence (front-end only; no server upload)
 const docFileEl = document.getElementById("docFile");
@@ -97,6 +99,7 @@ const draftMsgEl = document.getElementById("draftMsg");
 
 const prompt2TextEl = document.getElementById("prompt2Text");
 const refineDraftBtn = document.getElementById("refineDraftBtn");
+const insertTemplate2Btn = document.getElementById("insertTemplate2Btn");
 
 const finalDraftEl = document.getElementById("finalDraft");
 const copyFinalToGuideBtn = document.getElementById("copyFinalToGuideBtn");
@@ -137,6 +140,48 @@ function updateDraftAndPromptCounts() {
     draftCountEl.textContent = `Draft words: ${wc(draftEditedEl?.value || "")}`;
   }
 }
+
+  // Similarity meter: edited draft vs original AI draft
+  if (editSimilarityEl) {
+    const original = String(draftOriginalHiddenEl?.value || "");
+    const edited = String(draftEditedEl?.value || "");
+
+    if (!original.trim() || !edited.trim()) {
+      editSimilarityEl.textContent = "Similarity: —";
+      editSimilarityEl.classList.remove("ok", "warn");
+    } else {
+      const sim = similarity(edited, original);
+      const pct = Math.round(sim * 100);
+      const ready = sim <= 0.90;
+
+      editSimilarityEl.textContent = `Similarity: ${pct}% — ${ready ? "✅ Ready to refine" : "✏️ Edit a bit more (need ≤90%)"}`;
+      editSimilarityEl.classList.toggle("ok", ready);
+      editSimilarityEl.classList.toggle("warn", !ready);
+    }
+  }
+  // Similarity meter (Step 4 – Refine)
+  if (refineSimilarityEl) {
+    const original = String(draftOriginalHiddenEl?.value || "");
+    const edited = String(draftEditedEl?.value || "");
+
+    if (!original.trim() || !edited.trim()) {
+      refineSimilarityEl.textContent = "Similarity: —";
+      refineSimilarityEl.classList.remove("ok", "warn");
+    } else {
+      const sim = similarity(edited, original);
+      const pct = Math.round(sim * 100);
+      const ready = sim <= 0.90;
+
+      refineSimilarityEl.textContent = `Similarity: ${pct}% — ${ready ? "✅ Ready to refine" : "✏️ Edit a bit more (need ≤90%)"}`;
+      refineSimilarityEl.classList.toggle("ok", ready);
+      refineSimilarityEl.classList.toggle("warn", !ready);
+if (refineDraftBtn) {
+  refineDraftBtn.disabled = !ready;   // enable only when ≤90% similarity
+}
+
+    }
+  }
+
 
 function normText(s) {
   return String(s || "")
@@ -226,6 +271,21 @@ async function loadConfig() {
   insertTemplateBtn.addEventListener("click", () => {
     answerTextEl.value = data.templateText || "";
     updateWordCount();
+  });
+}
+
+if (insertTemplateBtn) {
+  insertTemplateBtn.addEventListener("click", () => {
+    answerTextEl.value = data.templateText || "";
+    updateWordCount();
+  });
+}
+
+/* ADD THIS DIRECTLY UNDER THE ABOVE */
+if (insertTemplate2Btn) {
+  insertTemplate2Btn.addEventListener("click", () => {
+    prompt2TextEl.value = data.templateText || "";
+    updateDraftAndPromptCounts();
   });
 }
 

@@ -677,3 +677,14 @@ body{
   padding-top: 12px;
   border-top: 1px solid #eee;
 }
+#editSimilarity.ok { font-weight: 700; }
+#editSimilarity.warn { font-weight: 700; }
+
+#refineSimilarity.ok { font-weight: 700; }
+#refineSimilarity.warn { font-weight: 700; }
+
+button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
