@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FEthink — AI Collaboration Practice Task</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <!-- ✅ Gate (Priorities modal style) -->
+  <div id="gate" class="gate" style="display:none;">
+    <div class="gateCard">
+      <div class="gateBrand">
+        <div class="logo">FEthink</div>
+        <div>
+          <h2 style="margin:0;">Enter access code</h2>
+          <div class="subtle">Enter the access code from your Payhip lesson.</div>
+        </div>
+      </div>
+
+      <label class="gateLabel" for="codeInput">Access code</label>
+      <div class="gateRow">
+        <input id="codeInput" type="password" autocomplete="off" placeholder="e.g. FETHINK-COLLAB-01" />
+        <button id="unlockBtn" class="primary" type="button">Unlock</button>
+      </div>
+      <div id="gateMsg" class="gateMsg" aria-live="polite"></div>
+      <div class="gateHint">Tip: this page opens in a new tab so you can return to your lesson easily.</div>
+    </div>
+  </div>
+
+  <!-- ✅ App wrapper expected by app.js -->
+  <div id="app" style="display:none;">
+
+    <!-- Top bar (Priorities style) -->
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">FEthink</div>
+        <div class="title">
+          <h1 style="margin:0;">Practice task: AI Collaboration (Shared Documents)</h1>
+          <p>Prompt-writing • Follow the steps below (draft → edit → refine → final guide)</p>
+        </div>
+        <div class="headerBtns">
+          <a id="backLink" class="linkBtn" href="#" target="_blank" rel="noopener">Back to lesson</a>
+          <a id="nextLink" class="linkBtn" href="#" target="_blank" rel="noopener">Next: Quiz</a>
+          <button id="logoutBtn" class="secondary small" type="button">Lock</button>
+        </div>
+      </div>
+    </div>
+
+    <main class="layout">
+      <div class="card oneCol">
+
+        <!-- Task text injected from server -->
+        <div id="questionText" aria-label="Task"></div>
+
+        <!-- Step 1: Prompt 1 -->
+        <div class="templateBox" id="step1">
+          <div class="templateHeader">
+            <div>
+              <h2>Step 1 — Prompt 1 (insert prompt 1 here)</h2>
+              <div class="subtle">
+                Write your first FEthink prompt using <strong>Role → Task → Context → Format</strong>.
+                (Minimum <span id="minGate">20</span> words)
+              </div>
+            </div>
+            <div class="templateBtns">
+              <button id="insertTemplateBtn" class="secondary small" type="button">Insert template</button>
+                            <!-- ✅ “Submit box” for Prompt 1 -->
+            </div>
+          </div>
+
+          <textarea
+            id="answerText"
+            rows="10"
+            placeholder="Insert Prompt 1 here (Role / Task / Context / Format)…"></textarea>
+<div class="hint" id="prompt1Count">Prompt 1 words: 0</div>
+
+          <div class="hint">This button generates a first draft in Step 2–3.</div>
+        </div>
+
+        <!-- Steps 2–4: Draft Assistant -->
+      <!-- Step 2–4: Draft Assistant -->
+<div class="templateBox" id="draftAssistantWrap">
+
+  <h2>Step 2 — Generate the first draft</h2>
+  <div class="subtle">
+    Click <strong>Generate draft</strong> (from Step 1). The AI draft will appear below.
+<button id="genDraftBtn" class="primary" type="button">Generate draft</button>  
+</div>
+
+  <!-- Box 2: AI draft (editable) -->
+  <div class="panel" style="margin-top:16px;">
+    <h3>Step 3 — Edit the AI draft in your own words</h3>
+    <div class="subtle">
+
+      You must edit at least <strong>10%</strong> before refining.
+      Once you have edited it, click <strong>Copy edited draft</strong>, then paste it into Step 4.
+    </div>
+
+<em class="subtle">Your edited guide</em>
+<textarea
+  id="draftEdited"
+  rows="10"
+  placeholder="The AI draft will appear here. Edit at least one section in your own words…"></textarea>
+
+<input id="draftOriginalHidden" type="hidden" value="" />
+
+<div class="hint" id="draftCount">Draft words: 0</div>
+<div class="hint" id="editSimilarity">Similarity: —</div>
+
+    <div style="display:flex; gap:10px; align-items:center; margin-top:10px; flex-wrap:wrap;">
+      <button id="copyEditedBtn" class="secondary" type="button">Copy edited draft</button>
+      <div id="draftMsg" class="subtle" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <!-- Step 4: Paste edited draft + Prompt 2 + refine -->
+  <div class="panel" style="margin-top:16px;">
+    <h3>Step 4 — Refine your draft with Prompt 2 (Role → Task → Context → Format)</h3>
+
+    <textarea
+      id="editedDraftToRefine"
+      rows="8"
+      placeholder="Paste your edited draft here (from Step 3)…"></textarea>
+
+  <em class="subtle">Your prompt 2</em>
+<div class="templateBtns" style="margin-top:8px;">
+    <button id="insertTemplate2Btn" class="secondary small" type="button">Insert template</button>
+</div>
+
+<textarea id="prompt2Text" rows="8" placeholder="Insert prompt 2 here (Role / Task / Context / Format)…"></textarea>
+<div class="subtle" id="prompt2Count">0 words</div>
+
+    <div style="display:flex; gap:10px; align-items:center; margin-top:10px; flex-wrap:wrap;">
+      <button id="refineDraftBtn" class="secondary" type="button">Refine draft</button>
+      <div id="finalMsg" class="subtle" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <!-- Final refined guide -->
+  <div class="panel" style="margin-top:16px;">
+    <h3>Final refined guide (AI output)</h3>
+    <textarea
+      id="finalDraft"
+      rows="10"
+      placeholder="Final refined guide will appear here…"></textarea>
+    <div style="display:flex; gap:10px; align-items:center; margin-top:10px; flex-wrap:wrap;">
+      <button id="copyFinalToGuideBtn" class="secondary" type="button">Copy into FINAL ONE-PAGE GUIDE</button>
+      <button id="copyFinalBtn" class="secondary" type="button">Copy to clipboard</button>
+<button id="refineDraftBtn" class="primary" disabled>Refine draft</button>
+<div class="hint" id="refineSimilarity">Similarity: —</div>
+    </div>
+  </div>
+
+</div>
+
+
+        <!-- Step 5: Final guide (scored) -->
+        <div class="templateBox" id="step5">
+          <h2>Step 5 — FINAL ONE-PAGE GUIDE (this will be scored)</h2>
+          <div class="subtle">
+            Paste your final refined guide here (minimum <strong>300</strong> words). This automarker scores your two prompts and your final guide text.
+            <strong>Feel free to edit this before you ‘submit’.</strong>
+          </div>
+          <textarea
+            id="finalGuideText"
+            rows="12"
+            placeholder="Paste your final one-page guide here…"></textarea>
+        </div>
+
+        <!-- Step 6: Submit -->
+        <div class="actionsRow">
+          <button id="submitBtn" class="primary" type="button">Submit for feedback</button>
+          <div id="wordCountBox" class="scoreBox">Words: —</div>
+        </div>
+
+        <div class="hint">
+          Prompts must be at least <strong><span id="minGateEcho">20</span> words</strong>. Final guide must be at least <strong>300 words</strong>.
+        </div>
+
+        <!-- Feedback -->
+        <div class="feedbackCard" style="margin-top:16px;">
+          <div class="feedbackTop">
+            <div class="metric">
+              <div class="metricLabel">Prompt score</div>
+              <div id="scoreBig" class="metricValue">—</div>
+              <div class="subtle">Words: <span id="wordCountBig">—</span></div>
+            </div>
+
+            <div id="guideScoreWrap" class="metric" style="display:none;">
+              <div class="metricLabel">Guide score</div>
+              <div id="guideScoreBig" class="metricValue">—</div>
+              <div class="subtle" style="margin-top:10px;">
+                <div style="font-weight:900; margin-bottom:6px;">Strengths</div>
+                <ul id="guideStrengths" class="bullets" style="margin-top:0;"></ul>
+                <div style="font-weight:900; margin:10px 0 6px;">Improvements</div>
+                <ul id="guideImprovements" class="bullets" style="margin-top:0;"></ul>
+              </div>
+            </div>
+          </div>
+
+          <div id="strengthsWrap" class="block" style="display:none;">
+            <h3>Strengths</h3>
+            <ul id="strengthsList" class="bullets"></ul>
+          </div>
+
+          <div id="tagsWrap" class="block" style="display:none;">
+            <h3>Feedback tags</h3>
+            <div id="tagsRow" class="tagsRow"></div>
+          </div>
+
+          <div id="gridWrap" class="block" style="display:none;">
+            <h3>Communication reminders</h3>
+            <div class="grid" id="grid">
+              <div class="gridRow">
+  <div class="gridName">
+    Prompt structure  
+    <div class="subtle">Did you follow Role → Task → Context → Format clearly?</div>
+  </div>
+  <div id="gEthical" class="gridStatus">—</div>
+</div>
+
+<div class="gridRow">
+  <div class="gridName">
+    Collaboration  
+    <div class="subtle">Did you use AI as a partner (draft → edit → refine) rather than accept the first output?</div>
+  </div>
+  <div id="gImpact" class="gridStatus">—</div>
+</div>
+
+<div class="gridRow">
+  <div class="gridName">
+    Output quality  
+    <div class="subtle">Is the final guide clear, practical, well-structured, and appropriate for new staff?</div>
+  </div>
+  <div id="gLegal" class="gridStatus">—</div>
+</div>
+
+<div class="gridRow">
+  <div class="gridName">
+    Length constraint  
+    <div class="subtle">Did you keep the final guide within the 300–400 word one-page limit?</div>
+  </div>
+  <div id="gStructure" class="gridStatus">—</div>
+</div>
+            </div>
+          </div>
+
+          <div id="feedbackBox" class="feedbackBox"></div>
+
+          <div id="learnMoreWrap" class="block" style="display:none;">
+            <button id="learnMoreBtn" class="secondary full" type="button" aria-expanded="false">Learn more</button>
+            <div id="frameworkPanel" class="frameworkPanel" aria-hidden="true" style="display:none;">
+              <div class="tabs">
+                <button class="tabBtn active" type="button" data-tab="gdpr" aria-selected="true">AI Approach</button>
+                <button class="tabBtn" type="button" data-tab="unesco" aria-selected="false">Precision</button>
+                <button class="tabBtn" type="button" data-tab="ofsted" aria-selected="false">Keep Control</button>
+                <button class="tabBtn" type="button" data-tab="jisc" aria-selected="false">Keep Refining</button>
+              </div>
+              <div class="tabBody">
+                <div id="tab-gdpr" class="tabPane active">
+                  <div class="fwRow"><div class="fwTitle">Expectation</div><div id="gdprExpectation" class="fwText"></div></div>
+                  <div class="fwRow"><div class="fwTitle">Example</div><div id="gdprCase" class="fwText"></div></div>
+                </div>
+                <div id="tab-unesco" class="tabPane">
+                  <div class="fwRow"><div class="fwTitle">Expectation</div><div id="unescoExpectation" class="fwText"></div></div>
+                  <div class="fwRow"><div class="fwTitle">Example</div><div id="unescoCase" class="fwText"></div></div>
+                </div>
+                <div id="tab-ofsted" class="tabPane">
+                  <div class="fwRow"><div class="fwTitle">Expectation</div><div id="ofstedExpectation" class="fwText"></div></div>
+                  <div class="fwRow"><div class="fwTitle">Example</div><div id="ofstedCase" class="fwText"></div></div>
+                </div>
+                <div id="tab-jisc" class="tabPane">
+                  <div class="fwRow"><div class="fwTitle">Expectation</div><div id="jiscExpectation" class="fwText"></div></div>
+                  <div class="fwRow"><div class="fwTitle">Example</div><div id="jiscCase" class="fwText"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="modelWrap" class="modelWrap" style="display:none;">
+            <h3>Example of a strong prompt</h3>
+            <div class="subtle">Compare your prompt to the example below. You are not expected to match it exactly.</div>
+            <pre id="modelAnswer" class="modelAnswer"></pre>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <script src="/app.js"></script>
+  </div>
+</body>
+</html>
