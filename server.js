@@ -94,7 +94,7 @@ function markFinalGuide(text) {
   const hasTitle = /^.+\n/.test(s.trim());
   const bulletCount = (s.match(/•|\-|\*/g) || []).length;
   const hasClosing = /summary|in summary|to conclude|overall/i.test(s);
-  const hasPersonal = /i\s|my\s|personal example:/i.test(s);
+  const hasExamples = /example|e\.g\.|for example/i.test(s);
   const inRange = wc >= 300 && wc <= 400;
 
   let score = 0;
@@ -107,12 +107,15 @@ function markFinalGuide(text) {
   const strengths = [];
   if (hasTitle) strengths.push("Clear title provided.");
   if (bulletCount >= 4) strengths.push("Practical bullet tips included.");
-  if (hasPersonal) strengths.push("Personal example included.");
+  if (hasExamples) strengths.push("Good practice examples included.");
+
+const wellStructured = hasTitle && bulletCount >= 4 && hasClosing;
+if (wellStructured) strengths.push("Document is well-structured.");
 
   const improvements = [];
   if (!hasClosing) improvements.push("Add a one-sentence closing summary.");
   if (!inRange) improvements.push("Keep the final guide to one page (300–400 words).");
-  if (!hasPersonal) improvements.push("Add one short personal example.");
+  if (!hasExamples) improvements.push("Add 1–2 short good practice examples.");
 
   const warnings = [];
   if (!inRange) warnings.push("Word count outside the 300–400 one-page limit.");
@@ -125,7 +128,7 @@ return {
   guideMessage: null,
 
   guideScore: Math.max(0, Math.min(10, score)),
-  guideStrengths: strengths.slice(0, 3),
+  guideStrengths: strengths.slice(0, 4),
   guideImprovements: improvements.slice(0, 3),
   guideWarnings: warnings
 };
@@ -502,6 +505,15 @@ app.post("/api/mark", requireSession, (req, res) => {
   const workflowEvidence = req.body?.workflowEvidence || null;
 const promptResult = markPrioritisationPrompt(answerText, workflowEvidence);
   const guideResult = markFinalGuide(finalGuide);
+if (!guideResult.guideGated) {
+  const we = req.body?.workflowEvidence || null;
+  const edited = we && (we.similarityPct != null) ? (Number(we.similarityPct) <= 90) : false;
+  const refined = we && !!we.didRefine;
+
+  if ((edited || refined) && Array.isArray(guideResult.guideStrengths)) {
+    guideResult.guideStrengths.unshift("Guide has been edited.");
+  }
+}
 
   res.json({
     ok: true,

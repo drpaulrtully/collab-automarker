@@ -39,6 +39,7 @@ const prompt1CountEl = document.getElementById("prompt1Count");
 const draftCountEl = document.getElementById("draftCount");
 const editSimilarityEl = document.getElementById("editSimilarity");
 const refineSimilarityEl = document.getElementById("refineSimilarity");
+const prompt2CountEl = document.getElementById("prompt2Count");
 
 // Evidence (front-end only; no server upload)
 const docFileEl = document.getElementById("docFile");
@@ -133,54 +134,69 @@ function wc(s) {
   return t.split(/\s+/).filter(Boolean).length;
 }
 function updateDraftAndPromptCounts() {
+  // Prompt 1
   if (prompt1CountEl) {
     prompt1CountEl.textContent = `Prompt 1 words: ${wc(answerTextEl?.value || "")}`;
   }
+
+  // Draft (Step 3 edit box)
   if (draftCountEl) {
     draftCountEl.textContent = `Draft words: ${wc(draftEditedEl?.value || "")}`;
   }
-}
 
-  // Similarity meter: edited draft vs original AI draft
+  // Prompt 2 (Step 4)
+  const p2Words = wc(prompt2TextEl?.value || "");
+  if (prompt2CountEl) {
+    prompt2CountEl.textContent = `${p2Words} words`;
+  }
+
+  // Similarity: Step 3 (draftEdited vs original)
+  const original = String(draftOriginalHiddenEl?.value || "");
+  const editedStep3 = String(draftEditedEl?.value || "");
+
+  let step3Ready = false;
   if (editSimilarityEl) {
-    const original = String(draftOriginalHiddenEl?.value || "");
-    const edited = String(draftEditedEl?.value || "");
-
-    if (!original.trim() || !edited.trim()) {
+    if (!original.trim() || !editedStep3.trim()) {
       editSimilarityEl.textContent = "Similarity: —";
       editSimilarityEl.classList.remove("ok", "warn");
     } else {
-      const sim = similarity(edited, original);
+      const sim = similarity(editedStep3, original);
       const pct = Math.round(sim * 100);
-      const ready = sim <= 0.90;
-
-      editSimilarityEl.textContent = `Similarity: ${pct}% — ${ready ? "✅ Ready to refine" : "✏️ Edit a bit more (need ≤90%)"}`;
-      editSimilarityEl.classList.toggle("ok", ready);
-      editSimilarityEl.classList.toggle("warn", !ready);
+      step3Ready = sim <= 0.90;
+      editSimilarityEl.textContent =
+        `Similarity: ${pct}% — ${step3Ready ? "✅ Ready to refine" : "✏️ Edit a bit more (need ≤90%)"}`;
+      editSimilarityEl.classList.toggle("ok", step3Ready);
+      editSimilarityEl.classList.toggle("warn", !step3Ready);
     }
   }
-  // Similarity meter (Step 4 – Refine)
-  if (refineSimilarityEl) {
-    const original = String(draftOriginalHiddenEl?.value || "");
-    const edited = String(draftEditedEl?.value || "");
 
-    if (!original.trim() || !edited.trim()) {
+  // Similarity: Step 4 (pasted edited draft vs original)
+  const editedStep4 = String(editedDraftToRefineEl?.value || "");
+  let step4Ready = false;
+
+  if (refineSimilarityEl) {
+    if (!original.trim() || !editedStep4.trim()) {
       refineSimilarityEl.textContent = "Similarity: —";
       refineSimilarityEl.classList.remove("ok", "warn");
     } else {
-      const sim = similarity(edited, original);
+      const sim = similarity(editedStep4, original);
       const pct = Math.round(sim * 100);
-      const ready = sim <= 0.90;
-
-      refineSimilarityEl.textContent = `Similarity: ${pct}% — ${ready ? "✅ Ready to refine" : "✏️ Edit a bit more (need ≤90%)"}`;
-      refineSimilarityEl.classList.toggle("ok", ready);
-      refineSimilarityEl.classList.toggle("warn", !ready);
-if (refineDraftBtn) {
-  refineDraftBtn.disabled = !ready;   // enable only when ≤90% similarity
-}
-
+      step4Ready = sim <= 0.90;
+      refineSimilarityEl.textContent =
+        `Similarity: ${pct}% — ${step4Ready ? "✅ Ready to refine" : "✏️ Edit a bit more (need ≤90%)"}`;
+      refineSimilarityEl.classList.toggle("ok", step4Ready);
+      refineSimilarityEl.classList.toggle("warn", !step4Ready);
     }
   }
+
+  // Disable Step 4 refine unless BOTH are satisfied:
+  // - meaningful edit (≤90% similarity)
+  // - prompt 2 is ≥20 words
+  if (refineDraftBtn) {
+    const allow = step4Ready && p2Words >= 20;
+    refineDraftBtn.disabled = !allow;
+  }
+}
 
 
 function normText(s) {
@@ -274,13 +290,6 @@ async function loadConfig() {
   });
 }
 
-if (insertTemplateBtn) {
-  insertTemplateBtn.addEventListener("click", () => {
-    answerTextEl.value = data.templateText || "";
-    updateWordCount();
-  });
-}
-
 /* ADD THIS DIRECTLY UNDER THE ABOVE */
 if (insertTemplate2Btn) {
   insertTemplate2Btn.addEventListener("click", () => {
@@ -343,6 +352,8 @@ function initDraftAssistant() {
   };
   // Live word count for the draft as the student edits
   draftEditedEl.addEventListener("input", updateDraftAndPromptCounts);
+editedDraftToRefineEl?.addEventListener("input", updateDraftAndPromptCounts);
+prompt2TextEl?.addEventListener("input", updateDraftAndPromptCounts);
 
   // ✅ Step 2: Generate draft
   genDraftBtn.addEventListener("click", async () => {
@@ -409,6 +420,7 @@ updateDraftAndPromptCounts();
     if (!edited.trim()) {
       draftMsgEl.textContent = "Nothing to copy yet. Generate and edit the draft first.";
       return;
+updateDraftAndPromptCounts();
     }
     await copyToClipboard(edited);
     if (editedDraftToRefineEl) {
@@ -524,6 +536,7 @@ Thoughtful document-sharing helps FEthink work as one organisation rather than m
 `.trim();
 
       finalDraftEl.value = refined;
+updateDraftAndPromptCounts();
 didRefine = true;
       setMsg(finalMsgEl, "Refined guide ready.");
     } catch {
@@ -703,10 +716,13 @@ if (r.guideGated) {
       guideScoreWrap.style.display = "block";
     }
 
-    renderStrengths(r.strengths);
-    renderTags(r.tags);
-    renderGrid(r.grid);
-    renderFramework(r.framework);
+   renderStrengths(r.strengths);
+// renderTags(r.tags);   // removed for simplicity
+// renderGrid(r.grid);   // removed for simplicity
+renderFramework(r.framework);
+if (tagsWrap) tagsWrap.style.display = "none";
+if (gridWrap) gridWrap.style.display = "none";
+
     feedbackBox.textContent = r.feedback || "—";
 
     if (r.modelAnswer) {

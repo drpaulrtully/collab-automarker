@@ -124,24 +124,18 @@
       rows="8"
       placeholder="Paste your edited draft here (from Step 3)…"></textarea>
 
-  <em class="subtle">Your prompt 2</em>
-<div class="templateBtns" style="margin-top:8px;">
-  <em class="subtle" style="margin-right:10px;">Your prompt 2</em>
-  <button id="insertTemplate2Btn" class="secondary small" type="button">Insert template</button>
+ <div class="templateBtns" style="margin-top:8px;">
+    <button id="insertTemplate2Btn" class="secondary small" type="button">Insert template</button>
 </div>
-
-<textarea
-  id="prompt2Text"
-  rows="8"
-  placeholder="Insert prompt 2 here (Role / Task / Context / Format)…"></textarea>
 
 <textarea id="prompt2Text" rows="8" placeholder="Insert prompt 2 here (Role / Task / Context / Format)…"></textarea>
 <div class="subtle" id="prompt2Count">0 words</div>
 
-
     <div style="display:flex; gap:10px; align-items:center; margin-top:10px; flex-wrap:wrap;">
       <button id="refineDraftBtn" class="secondary" type="button">Refine draft</button>
-      <div id="finalMsg" class="subtle" aria-live="polite"></div>
+          <div class="hint" id="refineSimilarity">Similarity: —</div>
+  <div id="finalMsg" class="subtle" aria-live="polite"></div>
+</div>
     </div>
   </div>
 
@@ -155,8 +149,6 @@
     <div style="display:flex; gap:10px; align-items:center; margin-top:10px; flex-wrap:wrap;">
       <button id="copyFinalToGuideBtn" class="secondary" type="button">Copy into FINAL ONE-PAGE GUIDE</button>
       <button id="copyFinalBtn" class="secondary" type="button">Copy to clipboard</button>
-<button id="refineDraftBtn" class="primary" disabled>Refine draft</button>
-<div class="hint" id="refineSimilarity">Similarity: —</div>
     </div>
   </div>
 
