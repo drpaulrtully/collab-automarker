@@ -104,6 +104,10 @@ const copyFinalBtn = document.getElementById("copyFinalBtn");
 const finalMsgEl = document.getElementById("finalMsg");
 const copyEditedBtn = document.getElementById("copyEditedBtn");
 const editedDraftToRefineEl = document.getElementById("editedDraftToRefine");
+// Workflow evidence flags (sent to server on /api/mark)
+let didCopyEditedToStep4 = false;
+let didRefine = false;
+
 
 // Final guide scoring (Stage 3)
 const finalGuideTextEl = document.getElementById("finalGuideText");
@@ -233,7 +237,7 @@ if (clearBtn) {
 }
 
 
-  logoutBtn.addEventListener("click", async () => {
+  logoutBtn?.addEventListener("click", async () => {
     try {
       await api("/api/logout", {});
     } catch {}
@@ -255,15 +259,15 @@ if (clearBtn) {
   });
 
   // Learn more toggle
-  learnMoreBtn.addEventListener("click", () => {
+  learnMoreBtn?.addEventListener("click", () => {
     const expanded = learnMoreBtn.getAttribute("aria-expanded") === "true";
     setExpanded(learnMoreBtn, frameworkPanel, !expanded);
   });
 
   // Word count live
-  answerTextEl.addEventListener("input", updateWordCount);
+  answerTextEl?.addEventListener("input", updateWordCount);
   updateWordCount();
-answerTextEl.addEventListener("input", updateDraftAndPromptCounts);
+answerTextEl?.addEventListener("input", updateDraftAndPromptCounts);
 updateDraftAndPromptCounts();
 
   initDraftAssistant();
@@ -292,18 +296,42 @@ function initDraftAssistant() {
     setMsg(draftMsgEl, "Generating draft…");
 
     try {
-      const draft =
-`How to Use Shared Documents Effectively
+      const draft = `
+### How to Share Documents Effectively  
 
-Shared documents help teams collaborate in real time, but only when used well. Below are practical tips to help new staff work effectively with shared files.
+**Introduction and rationale**  
+FEthink is a multi-site organisation, with teams based both in the UK and overseas. We depend on shared documents to draft reports, design courses and manage projects efficiently across locations and time zones. When documents are not shared or updated properly, the risks are significant: colleagues may work from outdated versions, key decisions can be made on incomplete or incorrect information, and staff may waste time duplicating work that has already been done. Poor document practice can also create compliance and audit issues if important records are scattered across personal drives or email threads instead of being held in one agreed location.  
 
-• Use clear file names so others can quickly find the latest version.
-• Use comments to explain changes rather than silently rewriting someone else’s work.
-• Use track changes or suggestions so edits are transparent.
-• Avoid creating duplicate copies of the same document — agree where the “source of truth” lives.
-• Check version history before you start editing, and leave a short note when you finish.
+Good document-sharing habits ensure that everyone can access the same, most up-to-date information and that changes are transparent, traceable and easy to review. This is central to FEthink’s commitment to collaboration, quality and accountability.  
 
-In summary, good shared-document habits reduce mistakes and save time.`;
+**Good practice guidelines**  
+
+- **Use clear, consistent file names**  
+  Include the project, topic and status (for example, “L3-Curriculum-Plan_v1.2_Approved”). Consistent naming conventions help colleagues quickly identify the correct file and reduce the chance of editing obsolete or draft versions by mistake.  
+
+- **Agree a single “source of truth”**  
+  As a team, decide where the live version of each key document will be stored (such as a specific shared drive or folder). Avoid keeping local copies on desktops or relying on attachments in email chains. A single authoritative location prevents version conflicts and confusion.  
+
+- **Make your edits transparent**  
+  Use track changes, “suggesting” mode or equivalent tools so that others can see exactly what you have altered. Transparent editing speeds up review, supports accountability and makes it straightforward to accept, reject or reverse changes.  
+
+- **Use comments to explain your thinking**  
+  Rather than silently rewriting sections, add brief comments to explain why you propose a change, highlight issues or pose questions. This respects the original author’s intent, reduces misunderstandings and turns the document into a record of shared reasoning and decisions.  
+
+- **Check history before and after editing**  
+  Review the version history or recent activity before you begin so you understand what has changed since you last viewed the document. When you finish, leave a short note (for example, in comments, or a simple change log) summarising what you did and any follow-up actions needed from others.  
+
+**Summary and quick checklist**  
+Effective document sharing is about clarity, consistency and transparency. When everyone follows these simple practices, teams save time, reduce errors and maintain a reliable record of their work and decisions.  
+
+**Checklist before you close a shared document:**  
+- Is the file stored in the agreed “source of truth” location?  
+- Is the file name clear, consistent and up to date?  
+- Are your edits visible (track changes/suggestions) rather than hidden?  
+- Have you added comments where explanation is needed?  
+- Have you checked and updated the version history or change log if required?
+`.trim();
+
 
       draftOriginalHiddenEl.value = draft;
       draftEditedEl.value = draft;
@@ -324,8 +352,10 @@ updateDraftAndPromptCounts();
     }
     await copyToClipboard(edited);
     if (editedDraftToRefineEl) {
-      editedDraftToRefineEl.value = edited;
-    }
+  editedDraftToRefineEl.value = edited;
+  didCopyEditedToStep4 = true;
+}
+
     draftMsgEl.textContent =
       "Copied and pasted into Step 4. You can now write Prompt 2 and refine.";
   } catch {
@@ -364,16 +394,77 @@ updateDraftAndPromptCounts();
     setMsg(finalMsgEl, "Refining draft…");
 
     try {
-      const refined =
-  edited.trim() +
-  "\n\n---\n" +
-  "Improvements added by AI:\n" +
-  "• Reworded the introduction for clarity and tone for new starters.\n" +
-  "• Tightened bullet points to be more action-focused.\n" +
-  "• Added a short closing line to reinforce good practice.\n\n" +
-  "Tip: You can further ask the AI to suggest alternative phrasings or a checklist version.";
+      const refined = `
+### How to Share Documents Effectively  
+
+**Introduction and rationale**  
+FEthink is a multi-site organisation, with teams working across the UK and overseas, often asynchronously. Shared documents are one of our main tools for thinking, drafting and deciding together. When they are well managed, they reduce duplication, speed up projects and make our work more transparent. When they are not, the impact can be serious: staff may act on outdated information, effort is wasted re-doing or reconciling competing versions, and important decisions can be hard to evidence. Fragmented files also create avoidable risks for data protection, audit and quality assurance.  
+
+Effective document-sharing is therefore not just a technical habit; it is part of how we work professionally and how we demonstrate accountability to colleagues, partners and regulators.  
+
+**Good practice guidelines**  
+
+- **Use clear, consistent file names and locations**  
+  Include project, topic, version and status (for example, “L2-Maths-Scheme_v1.3_Draft”). Agree team naming rules and store documents in the correct shared area from the outset. This makes files easy to locate, reduces accidental use of old versions and helps new colleagues understand the structure quickly.  
+
+- **Agree a single “source of truth” for each document**  
+  Decide which file is the live version and where it lives. Avoid downloading and editing local copies unless absolutely necessary; if you must, upload changes back into the agreed file promptly. A clearly identified source of truth prevents parallel documents and conflicting edits.  
+
+- **Make edits transparent and reversible**  
+  Use track changes, “suggesting” mode or equivalent so that others can see what has been altered, by whom and when. Where possible, group related edits and label them in comments. This supports quicker approval, clearer accountability and safer rollback if something needs to be undone.  
+
+- **Use comments and tagging to communicate**  
+  Use comments to explain why you are changing something, raise questions or flag uncertainties. Tag colleagues (for example, with “@Name”) when you need a specific response. This keeps discussion attached to the relevant text and reduces long email chains.  
+
+- **Manage access and confidentiality appropriately**  
+  Before sharing, check who can see and edit the document. Use view-only or comment-only access when appropriate, and avoid storing sensitive information in general-access folders. Correct permissions protect data and prevent unintended changes.  
+
+- **Plan for versioning and milestones**  
+  For longer projects, agree when to “lock” a version (for example, at submission or sign-off) and how to label it (such as “_Approved” or “_Archived”). This provides a clear record of what was agreed at each stage and avoids overwriting final copies.  
+
+- **Check history and leave a trace of your work**  
+  Before editing, scan recent activity or version history to understand what’s changed. When you finish, add a brief note (in comments, a header, or a change log) summarising your key edits and any actions needed from others. This helps colleagues pick up where you left off.  
+
+**Summary**  
+Thoughtful document-sharing helps FEthink work as one organisation rather than many separate sites. Clarity, transparency and appropriate access are the foundations of good practice.  
+
+**Extended checklist before you close a shared document**  
+- Is the document saved in the correct shared folder and agreed “source of truth” location?  
+- Does the file name follow team conventions (project/topic + version + status)?  
+- Have you avoided creating duplicate local or email-only versions?  
+- Are your edits visible through track changes or suggestion mode?  
+- Have you explained significant changes or queries in comments?  
+- Have you tagged colleagues who need to review or respond?  
+- Are the sharing permissions (view/edit/comment) appropriate and safe?  
+- Have you checked recent activity or version history before and after editing?  
+- If this is a milestone version, have you clearly labelled it (for example, “_Approved”)?  
+- Would a new team member be able to understand what changed and why from the document alone?  
+
+---
+
+## What the AI improved and why
+
+**The refined guide made four main changes:**
+
+### Tone and depth  
+- The draft guide is functional and concise; it reads like a quick “how-to” note.  
+- The refined guide has a more professional, coaching tone. It explains why practices matter (risks, accountability, audit, data protection), not just what to do.
+
+### Structure and signposting  
+- The draft guide has a short intro, a list, and a brief summary.  
+- The refined guide adds clearer sections (introduction and rationale, guidelines, summary, extended checklist), so it reads more like a short internal guidance document than a memo.
+
+### Quality and richness of explanations  
+- In the draft guide, bullets are single sentences focused on behaviour.  
+- In the refined guide, each bullet is expanded into a short sub-section: it names the principle, gives a concrete example, and spells out the practical benefits (e.g. avoiding obsolete versions, easing onboarding, enabling rollback, cutting email traffic).
+
+### Practical detail and safeguards  
+- The draft guide focuses on collaboration basics (naming, comments, version history).  
+- The refined guide adds: access/permissions and confidentiality, tagging colleagues, local vs source-of-truth copies, milestone versions, and a longer checklist that prompts the reader to think about safety, clarity and future readers as well as immediate collaborators.
+`.trim();
 
       finalDraftEl.value = refined;
+didRefine = true;
       setMsg(finalMsgEl, "Refined guide ready.");
     } catch {
       setMsg(finalMsgEl, "Could not refine draft. Please try again.");
@@ -489,10 +580,28 @@ async function mark() {
   submitBtn.disabled = true;
 
   try {
-    const data = await api("/api/mark", {
-      answerText,
-      finalGuideText: finalGuideTextEl.value
-    });
+    const workflowEvidence = {
+  prompt2WordCount: prompt2TextEl ? wc(prompt2TextEl.value) : null,
+  similarityPct: (() => {
+    try {
+      const orig = String(draftOriginalHiddenEl?.value || "");
+      const edited = String(editedDraftToRefineEl?.value || "");
+      if (!orig.trim() || !edited.trim()) return null;
+      return Math.round(similarity(edited, orig) * 100);
+    } catch {
+      return null;
+    }
+  })(),
+  didRefine,
+  didCopyEditedToStep4
+};
+
+const data = await api("/api/mark", {
+  answerText,
+  finalGuideText: finalGuideTextEl.value,
+  workflowEvidence
+});
+
 
     const r = data.result;
 
@@ -505,13 +614,22 @@ async function mark() {
 
 // ✅ Hard gate message for final guide (<300 words)
 if (r.guideGated) {
-  guideScoreWrap.style.display = "none";
+  if (guideScoreWrap) guideScoreWrap.style.display = "none";
 
-  // Append the guide gate message so students understand what to fix
   const existing = String(feedbackBox.textContent || "").trim();
   const msg = r.guideMessage || "Final guide must be at least 300 words.";
-  feedbackBox.textContent = existing ? `${existing}\n\nFINAL GUIDE: ${msg}` : `FINAL GUIDE: ${msg}`;
+  feedbackBox.textContent = existing
+    ? `${existing}\n\nFINAL GUIDE: ${msg}`
+    : `FINAL GUIDE: ${msg}`;
+
+  finalGuideTextEl?.focus();
+
+  // Optional: remove alert if you prefer a quieter UX
+  alert("Your final guide must be at least 300 words before you can submit for feedback.");
+
+  return;
 }
+
 
     // Final guide score (Stage 3)
     if (typeof r.guideScore === "number") {

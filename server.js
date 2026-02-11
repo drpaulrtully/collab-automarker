@@ -69,6 +69,11 @@ function countAny(t, needles) {
   for (const n of needles) if (t.includes(n)) c += 1;
   return c;
 }
+function toNum(v, fallback = null) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : fallback;
+}
+
 function markFinalGuide(text) {
   const wc = wordCount(text);
   // ✅ HARD GATE: final guide must be at least 300 words
@@ -110,15 +115,21 @@ function markFinalGuide(text) {
   if (!hasPersonal) improvements.push("Add one short personal example.");
 
   const warnings = [];
- if (!inRange) warnings.push("Word count outside the 300–400 one-page limit.");
+  if (!inRange) warnings.push("Word count outside the 300–400 one-page limit.");
+// Optional minor penalty if over the 400-word guidance (hard fail only applies <300)
+if (wc > 400) score = Math.max(0, score - 1);
 
-  return {
-    guideScore: Math.max(0, Math.min(10, score)),
-    guideStrengths: strengths.slice(0, 3),
-    guideImprovements: improvements.slice(0, 3),
-    guideWarnings: warnings
-  };
-}
+
+return {
+  guideGated: false,
+  guideMessage: null,
+
+  guideScore: Math.max(0, Math.min(10, score)),
+  guideStrengths: strengths.slice(0, 3),
+  guideImprovements: improvements.slice(0, 3),
+  guideWarnings: warnings
+};
+} // <-- closes markFinalGuide properly
 
 /* ---------------- Task content ---------------- */
 const TEMPLATE_TEXT = `Role:
@@ -250,7 +261,7 @@ function tagStatus(level) {
 }
 
 /* ---------------- Marker ---------------- */
-function markPrioritisationPrompt(answerText) {
+function markPrioritisationPrompt(answerText, workflowEvidence = null) {
   const wc = wordCount(answerText);
 
   // ✅ HARD GATE
@@ -299,19 +310,54 @@ function markPrioritisationPrompt(answerText) {
     );
   }
 
-  // Category B: AI collaboration & iteration (0–10)
-  const collabCount = countAny(t, COLLAB_HITS);
-  const mentionsTwoPrompts =
-    hasAny(t, ["prompt 1", "prompt one", "task 1"]) &&
-    hasAny(t, ["prompt 2", "prompt two", "task 2"]);
-  const mentionsReviewDimensions = hasAny(t, ["clarity", "consistency", "tone", "flow"]);
+// Category B: AI collaboration & iteration (0–10)
+const collabCount = countAny(t, COLLAB_HITS);
+const mentionsTwoPrompts =
+  hasAny(t, ["prompt 1", "prompt one", "task 1"]) &&
+  hasAny(t, ["prompt 2", "prompt two", "task 2"]);
+const mentionsReviewDimensions = hasAny(t, ["clarity", "consistency", "tone", "flow"]);
 
-  let collabLevel = 0;
-  let collabPts = 0;
+let collabLevel = 0;
+let collabPts = 0;
 
-  if (mentionsTwoPrompts && mentionsReviewDimensions && collabCount >= 8) {
+// Prefer behavioural evidence (sent from client). If it's missing, only score what we can *infer* from the text.
+const we = (workflowEvidence && typeof workflowEvidence === "object") ? workflowEvidence : null;
+const similarityPct = we ? toNum(we.similarityPct, null) : null;
+const prompt2WordCount = we ? toNum(we.prompt2WordCount, null) : null;
+const didRefine = we ? !!we.didRefine : false;
+const didCopyEditedToStep4 = we ? !!we.didCopyEditedToStep4 : false;
+
+const hasAnyWorkflowSignal =
+  similarityPct !== null ||
+  prompt2WordCount !== null ||
+  didRefine ||
+  didCopyEditedToStep4;
+
+if (hasAnyWorkflowSignal) {
+  const hasPrompt2 = (prompt2WordCount !== null) ? (prompt2WordCount >= 20) : mentionsTwoPrompts;
+  const meaningfulEdit = (similarityPct !== null) ? (similarityPct <= 90) : false; // ≤90% similarity => ≥10% change
+  const carriedForward = didRefine || didCopyEditedToStep4;
+
+  const evidenceHits = [hasPrompt2, meaningfulEdit, carriedForward].filter(Boolean).length;
+
+  if (evidenceHits >= 3) {
     collabLevel = 2;
     collabPts = 10;
+  } else if (evidenceHits === 2) {
+    collabLevel = 1;
+    collabPts = 7;
+    notes.push("Collaboration: You showed some workflow evidence, but complete the full cycle (draft → meaningful edit → refine) for a top score.");
+  } else {
+    collabLevel = 0;
+    collabPts = 3;
+    notes.push("Collaboration: Evidence suggests the full workflow wasn’t completed (draft → meaningful edit (≥10%) → refine). Complete all steps, then resubmit.");
+  }
+} else {
+  // Text-only fallback (honest): cap at 'Developing' because we can't verify real collaboration actions
+  if (mentionsTwoPrompts && mentionsReviewDimensions && collabCount >= 8) {
+    collabLevel = 1;
+    collabPts = 7;
+    notes.push("Collaboration: Your prompts describe the workflow well. To score higher, the system needs workflow evidence (edit/refine actions).");
   } else if (mentionsTwoPrompts && (collabCount >= 5 || mentionsReviewDimensions)) {
     collabLevel = 1;
     collabPts = 7;
@@ -325,6 +371,7 @@ function markPrioritisationPrompt(answerText) {
       "AI collaboration: Include TWO prompts and make Task 2 an editing review prompt (clarity, consistency, tone, flow) with 2–3 incorporated suggestions."
     );
   }
+}
 
   // Category C: Output quality & constraints (0–10)
   const qualityCount = countAny(t, OUTPUT_QUALITY_HITS);
@@ -452,7 +499,8 @@ app.post("/api/mark", requireSession, (req, res) => {
   const answerText = clampStr(req.body?.answerText, 6000);
   const finalGuide = clampStr(req.body?.finalGuideText, 8000);
 
-  const promptResult = markPrioritisationPrompt(answerText);
+  const workflowEvidence = req.body?.workflowEvidence || null;
+const promptResult = markPrioritisationPrompt(answerText, workflowEvidence);
   const guideResult = markFinalGuide(finalGuide);
 
   res.json({

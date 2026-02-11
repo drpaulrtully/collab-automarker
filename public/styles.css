@@ -673,3 +673,7 @@ body{
 .gateCard{
   background: #ffffff;
 }
+.taskText h3 {
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+}
